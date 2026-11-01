@@ -74,6 +74,8 @@ timeout 300 npx prisma migrate deploy
 node dist/cli/bootstrap.js --with-catalog
 # Photos envoyées depuis l'admin, servies directement par le serveur web.
 [ -e ~/$SITE_DIR/media ] || ln -s ~/$APP_DIR/uploads ~/$SITE_DIR/media
+# cPanel crée le dossier api/ (config Passenger) en 700 : le serveur web ne peut pas le lire → /api en 404.
+chmod 755 ~/$SITE_DIR/api && chmod 644 ~/$SITE_DIR/api/.htaccess
 touch tmp/restart.txt
 EOF
 

@@ -1030,7 +1030,7 @@ function AdminPanel({ user, onLogout }: { user: ApiUser; onLogout: () => void })
       {/* ---------- barre latérale ---------- */}
       <aside style={{ background: '#111', color: '#fff', display: 'flex', flexDirection: m ? 'row' : 'column', gap: m ? 16 : 36, padding: m ? '10px 16px' : '28px 18px', position: 'sticky', top: 0, height: m ? 'auto' : '100vh', zIndex: 30, overflowX: 'auto' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 'none', color: '#fff' }}>
-          <Logo size={40} />
+          <Logo size={40} light={false} />
           {!m && (
             <span style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               <span style={{ fontStretch: '125%', fontWeight: 600, fontSize: 14, letterSpacing: '.04em' }}>VASYCIAO</span>

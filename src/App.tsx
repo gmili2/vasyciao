@@ -9,13 +9,14 @@ import Cart, { Checkout } from './pages/Cart';
 import { About, Account, Contact, Faq, Legal, NotFound } from './pages/Content';
 import Home from './pages/Home';
 import Product from './pages/Product';
-import Shop, { Collections } from './pages/Shop';
+import Shop, { Collections, Favorites } from './pages/Shop';
 import { flushPixel, initPixel, track } from './pixel';
 import { PATHS } from './routes';
 import { HOME_TITLE, SHOP_PITCH, setMeta } from './seo';
 import { useStore } from './store';
 
 const TITLES: Record<string, string> = {
+  [PATHS.favorites]: 'Favoris',
   [PATHS.collections]: 'Collections',
   [PATHS.cart]: 'Panier',
   [PATHS.checkout]: 'Commande',
@@ -40,7 +41,7 @@ const SHOP_TITLES: Record<string, string> = {
   '/produits/promos': 'Promos',
 };
 /** Pages personnelles : jamais dans les résultats de recherche. */
-const PRIVATE = [PATHS.cart, PATHS.checkout, PATHS.account];
+const PRIVATE = [PATHS.cart, PATHS.checkout, PATHS.account, PATHS.favorites];
 
 export default function App() {
   const L = useLayout();
@@ -77,7 +78,7 @@ export default function App() {
 
   if (pathname.startsWith(PATHS.admin)) return <Admin />;
   // Boutique en accès privé : rien n'est affiché avant la saisie du code.
-  if (!site) return <div style={{ minHeight: '100vh', background: '#0B0B0B' }} />;
+  if (!site) return <div style={{ minHeight: '100vh', background: '#ECEBE8' }} />;
   if (site.private && !site.unlocked) return <div className="store"><AccessGate onUnlock={unlocked} /></div>;
 
   const isHome = pathname === '/';
@@ -103,6 +104,7 @@ export default function App() {
           <Route path={PATHS.cgv} element={<Legal kind="cgv" />} />
           <Route path={PATHS.privacy} element={<Legal kind="privacy" />} />
           <Route path={PATHS.account} element={<Account />} />
+          <Route path={PATHS.favorites} element={<Favorites />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

@@ -6,6 +6,7 @@ import { useCatalog } from '../catalog';
 import { CATS, type CategoryId } from '../data';
 import { useLayout } from '../layout';
 import { catFromSlug, shopPath } from '../routes';
+import { useStore } from '../store';
 
 type Sort = 'pop' | 'new' | 'asc' | 'desc';
 const PER_PAGE = 24;
@@ -88,5 +89,22 @@ export function Collections() {
         <CollectionsGrid />
       </section>
     </>
+  );
+}
+
+/** Articles ajoutés aux favoris (cœur sur les cartes et la fiche), gardés dans le navigateur. */
+export function Favorites() {
+  const L = useLayout();
+  const { favs } = useStore();
+  const { products } = useCatalog();
+  const items = products.filter((p) => favs.includes(p.id));
+  return (
+    <section data-reveal style={{ padding: `${L.pageTop} ${L.px} 0`, display: 'flex', flexDirection: 'column', gap: 28 }}>
+      <Crumbs items={[['Accueil', '/'], ['Favoris']]} />
+      <h1 className="display" style={{ fontSize: L.h2 }}>Vos favoris</h1>
+      {items.length
+        ? <ProductGrid items={items} />
+        : <p style={{ margin: 0, color: 'var(--muted)', fontSize: 15 }}>Aucun favori pour le moment : touchez le cœur d’un article pour le retrouver ici. <Link to={shopPath('all')} style={{ textDecoration: 'underline' }}>Voir la boutique</Link></p>}
+    </section>
   );
 }

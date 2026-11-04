@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { api } from '../api';
 import { useCatalog } from '../catalog';
 import { Crumbs, Dial, ProductGrid, iconOf } from '../components/Catalog';
 import { QtyStepper } from '../components/Shell';
-import { BagIcon } from '../components/icons';
+import { BagIcon, HeartIcon } from '../components/icons';
 import { fmt, ratingF, stars, type Product as P, type Variant } from '../data';
 import { useLayout } from '../layout';
 import { track } from '../pixel';
@@ -12,12 +12,6 @@ import { PATHS, productPath, shopPath } from '../routes';
 import { SHOP_PITCH, setMeta } from '../seo';
 import { lineKey, useStore } from '../store';
 
-const VIEWS = ['Face', 'Dos', 'Détail', 'Porté'];
-const REASSURE = [
-  { t: 'Livraison', d: '2 à 4 jours partout au Maroc' },
-  { t: 'Échange de taille', d: 'Sous 7 jours' },
-  { t: 'Paiement', d: 'À la livraison' },
-];
 type Review = { id: string; author: string; rating: number; title: string | null; comment: string; createdAt: string };
 const MONTH = new Intl.DateTimeFormat('fr-FR', { month: 'short', year: 'numeric' });
 const pct = (price: number, old: number) => '−' + Math.round((1 - price / old) * 100) + ' %';
@@ -35,11 +29,10 @@ export default function Product() {
   const { id = '' } = useParams();
   const catalog = useCatalog();
   const p = catalog.find(id);
-  const { add, cart, remove } = useStore();
+  const { add, cart, remove, favs, toggleFav } = useStore();
   // Photo affichée : index choisi à la main, ou -1 = suivre la photo de la couleur sélectionnée.
   const [img, setImg] = useState(-1);
-  const [zoom, setZoom] = useState(false);
-  const [zxy, setZxy] = useState({ x: 50, y: 50 });
+  const [tab, setTab] = useState(0);
   const [qty, setQty] = useState(1);
   // Offre choisie (1, 2, 3 articles…) et coloris des articles 2, 3… (l’article 1 suit la sélection principale).
   // ?offre=2 dans le lien (publicités) : l'offre de 2 articles est présélectionnée.
@@ -50,7 +43,7 @@ export default function Product() {
   const [choice, setChoice] = useState<{ id: string; sel: Record<string, string> }>({ id: '', sel: {} });
   const [reviews, setReviews] = useState<{ id: string; list: Review[] }>({ id: '', list: [] });
 
-  useEffect(() => { setImg(-1); setZoom(false); setQty(1); setPack(Number(params.get('offre')) || 1); setExtra([]); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setImg(-1); setTab(0); setQty(1); setPack(Number(params.get('offre')) || 1); setExtra([]); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!p) return;
     const text = `${p.kind ? p.kind + '. ' : ''}${p.desc}`.replace(/\s+/g, ' ');
@@ -96,8 +89,7 @@ export default function Product() {
       if (alt) next = Object.fromEntries((p.options ?? []).map((o, k) => [o.name, alt.values[k].label]));
     }
     setChoice({ id: p.id, sel: next });
-    setImg(-1); // la grande photo suit la nouvelle couleur
-    setZoom(false);
+    setImg(-1); // la première photo suit la nouvelle couleur
   };
   const variant = p.variants.find((v) => matches(p, v, sel));
   /** Une valeur est disponible si, combinée aux autres choix actuels, elle donne une déclinaison en stock. */
@@ -111,7 +103,6 @@ export default function Product() {
   const gallery = [...photos.map((src) => ({ src, video: false })), ...p.videos.map((src) => ({ src, video: true }))];
   const variantPhoto = variant?.imageUrl ? photos.indexOf(variant.imageUrl) : -1;
   const shown = img >= 0 ? Math.min(img, gallery.length - 1) : Math.max(0, variantPhoto);
-  const mainVideo = gallery[shown]?.video ? gallery[shown].src : null;
   const mainPhoto = variant?.imageUrl && img < 0 && variantPhoto < 0 ? variant.imageUrl : photos[shown];
   const ref = variant?.sku ?? p.sku;
   const buy = () => { if (canBuy) addPack(); };
@@ -146,124 +137,79 @@ export default function Product() {
     navigate(PATHS.checkout);
   };
 
-  const pos = (e: React.MouseEvent<HTMLDivElement>) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    return { x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 };
-  };
   const similar = catalog.products.filter((x) => x.id !== p.id && x.cats.some((c) => p.cats.includes(c) && c !== 'new')).slice(0, 4);
-  const specs = [
-    ['Matière', p.movement], ['Coupe', p.strap], ['Tailles', p.dims], ['Entretien', p.glass],
-    ['Détail', p.water], ['Livraison', '2 à 4 jours — Maroc'], ['Référence', ref],
-  ].filter(([, v]) => v);
+  const tabs: [string, string][] = [
+    ['Matière & entretien', [p.movement, p.glass].filter(Boolean).join(' · ')],
+    ['Taille & coupe', [p.strap, p.dims && `Tailles : ${p.dims}`].filter(Boolean).join(' · ')],
+    ['Livraison & retours', 'Livraison en 2 à 4 jours partout au Maroc, paiement à la livraison. Échange de taille sous 7 jours, article non porté.'],
+    ['Détails', [p.water, `Référence ${ref}`].filter(Boolean).join(' · ')],
+  ].filter(([, v]) => v) as [string, string][];
+  const fav = favs.includes(p.id);
+  const who = p.cats.includes('femme') && p.cats.includes('homme') ? 'Mixte' : p.cats.includes('femme') ? 'Femme' : p.cats.includes('homme') ? 'Homme' : '';
+  // Grille de photos : celle de la couleur choisie d'abord ; une seule photo → photo + gros plan, comme la maquette.
+  const order = gallery.length ? [shown, ...gallery.map((_, i) => i).filter((i) => i !== shown)] : [];
+  const tiles = order.map((i) => ({ ...gallery[i], src: i === shown && !gallery[i].video && mainPhoto ? mainPhoto : gallery[i].src, i, detail: false }));
+  if (tiles.length === 1 && !tiles[0].video) tiles.push({ ...tiles[0], i: tiles[0].i, detail: true });
   const shownReviews = reviews.id === p.id ? reviews.list : [];
-  const label: React.CSSProperties = { fontFamily: 'var(--mono)', fontSize: 10.5, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--graphite)' };
+  const label: React.CSSProperties = { fontSize: 11, fontWeight: 600, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--ink)' };
 
   return (
     <>
-      <section style={{ padding: `24px ${L.px} 0` }}>
-        <Crumbs items={[['Accueil', '/'], ['Boutique', shopPath('all')], [p.name]]} />
-        <div style={{ display: 'grid', gridTemplateColumns: L.split, gap: L.pGap, marginTop: 24, alignItems: 'start' }}>
-          <div data-reveal style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {mainVideo ? (
-              <div className="ph" style={{ aspectRatio: '4/5', backgroundImage: 'none', background: '#000', overflow: 'hidden' }}>
-                <video key={mainVideo} src={mainVideo} controls autoPlay muted loop playsInline preload="metadata"
-                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />
-              </div>
-            ) : (
-            <div
-              role="button" tabIndex={0} aria-label={zoom ? 'Dézoomer' : 'Zoomer sur la photo'}
-              onClick={(e) => { setZxy(pos(e)); setZoom((z) => !z); }}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoom((z) => !z); } }}
-              onMouseMove={(e) => zoom && setZxy(pos(e))}
-              onMouseLeave={() => zoom && setZoom(false)}
-              className="ph" style={{ aspectRatio: '4/5', backgroundImage: 'none', cursor: zoom ? 'zoom-out' : 'zoom-in', background: mainPhoto ? 'var(--card)' : 'transparent' }}
-            >
-              <div className="ph" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: zoom ? 'scale(2.2)' : 'scale(1)', transformOrigin: `${zxy.x}% ${zxy.y}%`, transition: 'transform .6s var(--ease)' }}>
-                {mainPhoto
-                  ? <img src={mainPhoto} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 18%', display: 'block' }} />
-                  : <Dial size="36%" path={iconOf(p)} />
-                }
-              </div>
-              <span className="ph-caption">photo · {p.name}{variant ? ' ' + variant.values.map((v) => v.label).join(' · ') : ''} — {photos.length ? `${shown + 1} / ${gallery.length}` : VIEWS[Math.max(0, img)]}</span>
-              <span style={{ position: 'absolute', right: 14, top: 14, padding: '6px 10px', background: '#0B0B0B', color: '#F5F5F3', fontFamily: 'var(--mono)', fontSize: 12, textTransform: 'uppercase' }}>
-                {zoom ? 'Zoom × 2,2' : 'Cliquer pour zoomer'}
-              </span>
-            </div>
+      <section style={{ maxWidth: 1360, margin: '0 auto', padding: '20px 24px 0' }}>
+        <Crumbs items={[['Accueil', '/'], ...(who && who !== 'Mixte' ? [[who, shopPath(who === 'Femme' ? 'femme' : 'homme')] as [string, string]] : [['Boutique', shopPath('all')] as [string, string]]), [p.name]]} />
+        <div style={{ display: 'grid', gridTemplateColumns: L.mobile ? 'minmax(0,1fr)' : 'minmax(0,1.45fr) minmax(340px,1fr)', gap: 48, marginTop: 20, alignItems: 'start' }}>
+          <div data-reveal style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
+            {!tiles.length && (
+              <div className="ph" style={{ gridColumn: '1 / -1', aspectRatio: '3 / 4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Dial size="30%" path={iconOf(p)} /></div>
             )}
-            {gallery.length > 1 ? (
-              // Toutes les vignettes, sur plusieurs lignes si besoin (6 par ligne).
-              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(gallery.length, 6)},minmax(0,1fr))`, gap: 10 }}>
-                {gallery.map(({ src, video }, i) => (
-                  <button key={src} className="ph" onClick={() => { setImg(i); setZoom(false); }} aria-label={video ? `Vidéo ${i - photos.length + 1}` : `Photo ${i + 1}`} aria-pressed={i === shown}
-                    style={{ aspectRatio: '1', padding: 0, cursor: 'pointer', backgroundImage: 'none', background: video ? '#000' : 'var(--card)', border: `1px solid ${i === shown ? 'var(--ink)' : 'transparent'}`, overflow: 'hidden', position: 'relative' }}>
-                    {video
-                      ? <>
-                          {/* #t=0.1 : première image de la vidéo comme vignette. */}
-                          <video src={`${src}#t=0.1`} muted playsInline preload="metadata" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                          <span aria-hidden style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 30, height: 30, background: '#F5F5F3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <span style={{ width: 0, height: 0, borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: '10px solid #0B0B0B', marginLeft: 3 }} />
-                          </span>
-                        </>
-                      : <img src={src} alt="" loading="lazy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}
-                  </button>
-                ))}
+            {tiles.map((t, k) => (
+              <div key={`${t.src}-${k}`} style={{ position: 'relative', aspectRatio: '3 / 4', background: 'var(--stone)', overflow: 'hidden' }}>
+                {t.video
+                  ? <video src={t.src} controls muted loop playsInline preload="metadata" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', background: '#000' }} />
+                  : <img src={t.src} alt={t.detail ? `${p.name}, détail` : p.name} loading={k > 1 ? 'lazy' : undefined}
+                      onClick={() => !t.detail && setImg(t.i)}
+                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: t.detail ? 'center 62%' : 'center top', transform: t.detail ? 'scale(1.6)' : 'none', display: 'block' }} />}
               </div>
-            ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))', gap: 10 }}>
-              {VIEWS.map((v, i) => (
-                <button
-                  key={v} className="ph" onClick={() => { setImg(i); setZoom(false); }} aria-label={`Vue ${v}`} aria-pressed={i === shown}
-                  style={{ aspectRatio: '1', padding: 0, cursor: 'pointer', backgroundImage: 'none', background: p.image && i === 0 ? 'var(--card)' : undefined, border: `1px solid ${i === shown ? 'var(--ink)' : 'transparent'}`, display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-start', overflow: 'hidden', position: 'relative' }}
-                >
-                  {p.image && i === 0 && <img src={p.image} alt={v} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />}
-                  <span style={{ position: 'relative', zIndex: 1, padding: 8, fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: p.image ? 'rgba(11,11,11,.6)' : 'var(--graphite)', textAlign: 'left' }}>{v}</span>
-                </button>
-              ))}
-            </div>
-            )}
+            ))}
           </div>
 
-          <div data-reveal style={{ position: L.sticky, top: 110, display: 'flex', flexDirection: 'column', gap: 22, paddingTop: 6 }}>
-            <span className="mono">N° {ref} · {p.col}</span>
-            <h1 className="display" style={{ margin: '-6px 0 0', fontSize: 'clamp(52px, 5vw, 76px)' }}>{p.name}</h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13 }}>
-              <span style={{ letterSpacing: '.12em' }}>{stars(p.rating)}</span><span>{ratingF(p.rating)}</span>
-              <span style={{ color: 'var(--graphite)' }}>· {p.reviews} avis</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: 14, padding: '18px 0', borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
-              <span style={{ fontFamily: 'var(--mono)', fontSize: 22 }}>{fmt(price)}</span>
-              {old && (
-                <>
-                  <span style={{ fontSize: 16, color: 'var(--graphite)', textDecoration: 'line-through' }}>{fmt(old)}</span>
-                  <span style={{ padding: '5px 10px', background: 'var(--ink)', color: 'var(--ivory)', fontFamily: 'var(--mono)', fontSize: 12 }}>{pct(price, old)}</span>
-                </>
-              )}
-              <span style={{ flexBasis: '100%', fontSize: 12.5, color: 'var(--graphite)' }}>TTC · paiement à la livraison ou par virement</span>
+          <div data-reveal style={{ position: L.sticky, top: 110, display: 'flex', flexDirection: 'column', gap: 26 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <p style={{ margin: 0, fontSize: 11, fontWeight: 600, letterSpacing: '.24em', color: 'var(--graphite)', textTransform: 'uppercase' }}>{[p.cats.includes('new') && 'Nouveau', who].filter(Boolean).join(' · ') || p.col}</p>
+              <h1 className="display" style={{ fontSize: L.mobile ? 36 : 44, textTransform: 'uppercase' }}>{p.name}</h1>
+              <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: 12 }}>
+                <span style={{ fontSize: 20, fontWeight: 600, color: old ? 'var(--sale)' : undefined }}>{fmt(price)}</span>
+                {old && <><span style={{ fontSize: 15, color: 'var(--graphite)', textDecoration: 'line-through' }}>{fmt(old)}</span><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.12em', color: 'var(--sale)' }}>{pct(price, old)}</span></>}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--graphite)' }}>
+                <span style={{ letterSpacing: '.12em', color: 'var(--ink)' }}>{stars(p.rating)}</span><span>{ratingF(p.rating)} · {p.reviews} avis</span>
+              </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}>
               <span style={{ width: 7, height: 7, background: canBuy ? 'var(--ink)' : 'var(--faint)', boxShadow: '0 0 0 4px var(--line)' }} />{stockText}
             </div>
-            <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.7, color: 'var(--body)', textWrap: 'pretty' }}>{p.desc}</p>
+            <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: 'var(--body)', textWrap: 'pretty' }}>{p.desc}</p>
             {(p.options ?? []).map((o) => {
               const isColor = o.values.some((v) => v.colorHex);
               return (
                 <div key={o.name} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, ...label, color: 'var(--ink)' }}>
-                    <span style={{ color: 'var(--graphite)' }}>{o.name}</span><span style={{ textAlign: 'right' }}>{sel[o.name]}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, ...label }}>
+                    <span>{o.name}{isColor && <span style={{ color: 'var(--graphite)' }}> · {sel[o.name]}</span>}</span>
+                    {/taille|pointure/i.test(o.name) && <Link to={PATHS.faq} style={{ letterSpacing: '.1em' }}>Guide des tailles</Link>}
                   </div>
-                  <div role="radiogroup" aria-label={o.name} style={{ display: 'flex', flexWrap: 'wrap', gap: isColor ? 12 : 8 }}>
+                  <div role="radiogroup" aria-label={o.name} style={isColor ? { display: 'flex', flexWrap: 'wrap', gap: 12 } : { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))', gap: 6 }}>
                     {o.values.map((v) => {
                       const on = sel[o.name] === v.label;
                       const ok = available(o.name, v.label);
                       const title = v.label + (ok ? '' : ' — épuisé');
                       return isColor ? (
                         <button key={v.label} role="radio" aria-checked={on} aria-label={title} title={title} onClick={() => choose(o.name, v.label)}
-                          style={{ position: 'relative', width: 44, height: 44, padding: 0, cursor: 'pointer', background: v.colorHex ?? 'var(--paper)', border: 0, boxShadow: on ? '0 0 0 2px var(--ivory), 0 0 0 3px var(--ink)' : 'inset 0 0 0 1px #3A3A3A', opacity: ok ? 1 : 0.45, transition: 'box-shadow .25s' }}>
+                          style={{ position: 'relative', width: 44, height: 44, borderRadius: '50%', padding: 0, cursor: 'pointer', background: v.colorHex ?? 'var(--paper)', border: '2px solid var(--paper)', outline: on ? '1.5px solid var(--ink)' : '1.5px solid transparent', outlineOffset: 1, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.12)', opacity: ok ? 1 : 0.45, transition: 'box-shadow .25s' }}>
                           {!ok && <span aria-hidden style={{ position: 'absolute', left: '50%', top: 4, bottom: 4, width: 1, background: 'var(--ink)', transform: 'rotate(45deg)' }} />}
                         </button>
                       ) : (
-                        <button key={v.label} role="radio" aria-checked={on} title={title} className={`chip${on ? ' active' : ''}`} onClick={() => choose(o.name, v.label)}
-                          style={{ height: 44, padding: '0 18px', fontSize: 13, ...(!ok && !on && { color: 'var(--faint)', textDecoration: 'line-through' }) }}>{v.label}</button>
+                        <button key={v.label} role="radio" aria-checked={on} title={title} onClick={() => choose(o.name, v.label)}
+                          style={{ height: 48, border: '1px solid var(--ink)', background: on ? 'var(--ink)' : 'transparent', color: on ? '#FFFFFF' : 'var(--ink)', fontSize: 13, fontWeight: 600, cursor: 'pointer', ...(!ok && !on && { color: 'var(--faint)', borderColor: 'var(--line)', textDecoration: 'line-through' }) }}>{v.label}</button>
                       );
                     })}
                   </div>
@@ -272,7 +218,7 @@ export default function Product() {
             })}
             {offers.length > 0 && canBuy && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <span style={{ ...label, color: 'var(--graphite)' }}>Choisissez votre offre</span>
+                <span style={label}>Choisissez votre offre</span>
                 <div role="radiogroup" aria-label="Offre" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {offers.map((n) => {
                     const { sum, total } = packPrice(n);
@@ -295,7 +241,7 @@ export default function Product() {
                 </div>
                 {pack > 1 && p.variants.length > 1 && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px 16px', background: 'var(--paper)', border: '1px solid var(--line)' }}>
-                    <span style={{ ...label, color: 'var(--graphite)' }}>Choix de chaque article</span>
+                    <span style={label}>Choix de chaque article</span>
                     {unitVariants(pack).map((uv, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                         <span style={{ fontSize: 13.5, minWidth: 74 }}>Article {i + 1}</span>
@@ -310,7 +256,7 @@ export default function Product() {
                               const pick = () => setExtra((xs) => { const next = [...xs]; next[i - 1] = v.id; return next; });
                               return hex ? (
                                 <button key={v.id} role="radio" aria-checked={on} aria-label={name} title={name} onClick={pick}
-                                  style={{ width: 32, height: 32, padding: 0, cursor: 'pointer', background: hex, border: 0, boxShadow: on ? '0 0 0 2px var(--ivory), 0 0 0 3px var(--ink)' : 'inset 0 0 0 1px #3A3A3A' }} />
+                                  style={{ width: 32, height: 32, borderRadius: '50%', padding: 0, cursor: 'pointer', background: hex, border: '2px solid var(--paper)', outline: on ? '1.5px solid var(--ink)' : '1.5px solid transparent', outlineOffset: 1 }} />
                               ) : (
                                 <button key={v.id} role="radio" aria-checked={on} className={`chip${on ? ' active' : ''}`} onClick={pick} style={{ height: 36, padding: '0 14px', fontSize: 12.5 }}>{name}</button>
                               );
@@ -324,19 +270,28 @@ export default function Product() {
                 )}
               </div>
             )}
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              {!offers.length && <QtyStepper qty={qty} h={56} onDec={() => setQty((q) => Math.max(1, q - 1))} onInc={() => setQty((q) => q + 1)} />}
-              <button className="btn btn-primary btn-tall" disabled={!canBuy} style={{ flex: 1, minWidth: 200, opacity: canBuy ? 1 : 0.4 }} onClick={buy}>{canBuy ? '+ Ajouter au panier' : p.purchasable ? 'Épuisé' : 'Non disponible à la vente'}</button>
-            </div>
-            {canBuy && (
-              <button className="btn btn-outline btn-tall" onClick={buyNow}>
-                Acheter maintenant · {fmt(packTotal)}{packTotal < packSum ? <span style={{ marginLeft: 8, textDecoration: 'line-through', opacity: 0.55 }}>{fmt(packSum)}</span> : null}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ display: 'flex', gap: 10 }}>
+                {!offers.length && canBuy && <QtyStepper qty={qty} h={56} onDec={() => setQty((q) => Math.max(1, q - 1))} onInc={() => setQty((q) => q + 1)} />}
+                <button className="btn btn-primary" disabled={!canBuy} style={{ flex: 1, minWidth: 0, height: 56, opacity: canBuy ? 1 : 0.4 }} onClick={buy}>{canBuy ? 'Ajouter au panier' : p.purchasable ? 'Épuisé' : 'Non disponible à la vente'}</button>
+              </div>
+              {canBuy && (
+                <button className="btn btn-outline" style={{ height: 52 }} onClick={buyNow}>
+                  Acheter maintenant · {fmt(packTotal)}{packTotal < packSum ? <span style={{ marginLeft: 8, textDecoration: 'line-through', opacity: 0.55 }}>{fmt(packSum)}</span> : null}
+                </button>
+              )}
+              <button onClick={() => toggleFav(p.id)} aria-pressed={fav} style={{ ...label, height: 44, background: 'transparent', border: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <HeartIcon size={16} fill={fav ? 'currentColor' : 'none'} />{fav ? 'Dans vos favoris' : 'Ajouter aux favoris'}
               </button>
-            )}
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {REASSURE.map((r) => (
-                <div key={r.t} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, padding: '13px 0', borderTop: '1px solid var(--line)', fontSize: 13.5 }}>
-                  <span>{r.t}</span><span style={{ color: 'var(--graphite)' }}>{r.d}</span>
+            </div>
+            <div style={{ borderTop: '1px solid var(--line)' }}>
+              {tabs.map(([t, body], i) => (
+                <div key={t} style={{ borderBottom: '1px solid var(--line)' }}>
+                  <button onClick={() => setTab(tab === i ? -1 : i)} aria-expanded={tab === i}
+                    style={{ ...label, letterSpacing: '.16em', width: '100%', minHeight: 54, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'transparent', border: 0, cursor: 'pointer', padding: 0 }}>
+                    {t}<span aria-hidden="true" style={{ fontSize: 18, fontWeight: 400 }}>{tab === i ? '−' : '+'}</span>
+                  </button>
+                  {tab === i && <p style={{ margin: '0 0 16px', fontSize: 14, lineHeight: 1.7, color: 'var(--body)' }}>{body}</p>}
                 </div>
               ))}
             </div>
@@ -344,25 +299,10 @@ export default function Product() {
         </div>
       </section>
 
-      <section data-reveal style={{ padding: `${L.sec} ${L.px} 0`, display: 'grid', gridTemplateColumns: L.split2, gap: L.pGap }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <span className="eyebrow">Détails & matière</span>
-          <h2 className="display" style={{ fontSize: L.h3 }}>Caractéristiques</h2>
-        </div>
-        <dl style={{ margin: 0 }}>
-          {specs.map(([k, v]) => (
-            <div key={k} style={{ display: 'grid', gridTemplateColumns: 'minmax(120px,0.8fr) minmax(0,2fr)', gap: 20, padding: '18px 0', borderTop: '1px solid var(--line)' }}>
-              <dt style={{ ...label, paddingTop: 2 }}>{k}</dt>
-              <dd style={{ margin: 0, fontSize: 15, lineHeight: 1.5 }}>{v}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section data-reveal style={{ padding: `${L.sec} ${L.px} 0`, display: 'grid', gridTemplateColumns: L.split2, gap: L.pGap }}>
+      <section data-reveal style={{ maxWidth: 1360, margin: '0 auto', padding: '72px 24px 0', display: 'grid', gridTemplateColumns: L.split2, gap: L.pGap }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'flex-start' }}>
           <span className="eyebrow">Avis clients</span>
-          <span style={{ fontFamily: 'var(--display-font)', fontSize: 64, lineHeight: 1 }}>{ratingF(p.rating)}</span>
+          <span className="display" style={{ fontSize: 64, lineHeight: 1 }}>{ratingF(p.rating)}</span>
           <span style={{ letterSpacing: '.14em' }}>{stars(p.rating)}</span>
           <span style={{ fontSize: 13.5, color: 'var(--graphite)' }}>Basé sur {p.reviews} avis vérifiés</span>
           <button className="btn btn-outline" style={{ marginTop: 8, height: 48, padding: '0 24px', fontSize: 11.5 }}>Écrire un avis</button>
@@ -383,18 +323,15 @@ export default function Product() {
       </section>
 
       {similar.length > 0 && (
-        <section style={{ padding: `${L.sec} ${L.px} 0`, display: 'flex', flexDirection: 'column', gap: 32 }}>
-          <div data-reveal style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <span className="eyebrow">{String(similar.length).padStart(2, '0')} pièces</span>
-            <h2 className="display" style={{ fontSize: 48 }}>À porter avec</h2>
-          </div>
+        <section aria-label="Complétez la tenue" style={{ maxWidth: 1360, margin: '0 auto', padding: '72px 24px 88px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <h2 className="display" style={{ fontSize: 22, fontWeight: 600, letterSpacing: '.06em' }}>COMPLÉTEZ LA TENUE</h2>
           <ProductGrid items={similar} />
         </section>
       )}
 
       {L.mobile && (
         // Barre d'achat mobile : prix et coloris, ajout au panier (icône) et achat direct vers le formulaire de commande.
-        <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 45, background: '#0B0B0B', borderTop: '1px solid var(--line)', padding: '10px 16px calc(10px + env(safe-area-inset-bottom))', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 45, background: 'var(--paper)', borderTop: '1px solid var(--line)', padding: '10px 16px calc(10px + env(safe-area-inset-bottom))', display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1, minWidth: 0, flex: 'none', maxWidth: '34%' }}>
             <span style={{ fontSize: 16, fontWeight: 600, whiteSpace: 'nowrap' }}>{fmt(packTotal)}</span>
             {packTotal < packSum

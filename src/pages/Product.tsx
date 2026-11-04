@@ -55,7 +55,7 @@ export default function Product() {
     if (!p) return;
     const text = `${p.kind ? p.kind + '. ' : ''}${p.desc}`.replace(/\s+/g, ' ');
     setMeta({
-      title: `${p.name} — ${fmt(p.price)} — PESTAVE`,
+      title: `${p.name} — ${fmt(p.price)} — VASYCIAO`,
       description: `${p.name} à ${fmt(p.price)}${p.hasRange ? ' et plus' : ''}. ${text} ${SHOP_PITCH}`.slice(0, 300),
       path: productPath(p.id),
     });
@@ -153,7 +153,7 @@ export default function Product() {
   const similar = catalog.products.filter((x) => x.id !== p.id && x.cats.some((c) => p.cats.includes(c) && c !== 'new')).slice(0, 4);
   const specs = [
     ['Matière', p.movement], ['Coupe', p.strap], ['Tailles', p.dims], ['Entretien', p.glass],
-    ['Personnalisation', p.water], ['Référence', ref],
+    ['Détail', p.water], ['Livraison', '2 à 4 jours — Maroc'], ['Référence', ref],
   ].filter(([, v]) => v);
   const shownReviews = reviews.id === p.id ? reviews.list : [];
   const label: React.CSSProperties = { fontFamily: 'var(--mono)', fontSize: 10.5, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--graphite)' };
@@ -165,7 +165,7 @@ export default function Product() {
         <div style={{ display: 'grid', gridTemplateColumns: L.split, gap: L.pGap, marginTop: 24, alignItems: 'start' }}>
           <div data-reveal style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {mainVideo ? (
-              <div className="ph" style={{ aspectRatio: '1', backgroundImage: 'none', background: '#000', overflow: 'hidden' }}>
+              <div className="ph" style={{ aspectRatio: '4/5', backgroundImage: 'none', background: '#000', overflow: 'hidden' }}>
                 <video key={mainVideo} src={mainVideo} controls autoPlay muted loop playsInline preload="metadata"
                   style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />
               </div>
@@ -176,16 +176,16 @@ export default function Product() {
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoom((z) => !z); } }}
               onMouseMove={(e) => zoom && setZxy(pos(e))}
               onMouseLeave={() => zoom && setZoom(false)}
-              className="ph" style={{ aspectRatio: '1', backgroundImage: 'none', cursor: zoom ? 'zoom-out' : 'zoom-in', background: mainPhoto ? 'var(--card)' : 'transparent' }}
+              className="ph" style={{ aspectRatio: '4/5', backgroundImage: 'none', cursor: zoom ? 'zoom-out' : 'zoom-in', background: mainPhoto ? 'var(--card)' : 'transparent' }}
             >
               <div className="ph" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: zoom ? 'scale(2.2)' : 'scale(1)', transformOrigin: `${zxy.x}% ${zxy.y}%`, transition: 'transform .6s var(--ease)' }}>
                 {mainPhoto
-                  ? <img src={mainPhoto} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
+                  ? <img src={mainPhoto} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 18%', display: 'block' }} />
                   : <Dial size="36%" path={iconOf(p)} />
                 }
               </div>
               <span className="ph-caption">photo · {p.name}{variant ? ' ' + variant.values.map((v) => v.label).join(' · ') : ''} — {photos.length ? `${shown + 1} / ${gallery.length}` : VIEWS[Math.max(0, img)]}</span>
-              <span style={{ position: 'absolute', right: 14, top: 14, padding: '7px 12px', borderRadius: 999, background: 'rgba(242,241,236,.9)', color: '#0D0E11', fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.12em', textTransform: 'uppercase' }}>
+              <span style={{ position: 'absolute', right: 14, top: 14, padding: '6px 10px', background: '#0B0B0B', color: '#F5F5F3', fontFamily: 'var(--mono)', fontSize: 12, textTransform: 'uppercase' }}>
                 {zoom ? 'Zoom × 2,2' : 'Cliquer pour zoomer'}
               </span>
             </div>
@@ -200,8 +200,8 @@ export default function Product() {
                       ? <>
                           {/* #t=0.1 : première image de la vidéo comme vignette. */}
                           <video src={`${src}#t=0.1`} muted playsInline preload="metadata" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                          <span aria-hidden style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 30, height: 30, borderRadius: '50%', background: 'rgba(242,241,236,.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <span style={{ width: 0, height: 0, borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: '10px solid #0D0E11', marginLeft: 3 }} />
+                          <span aria-hidden style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 30, height: 30, background: '#F5F5F3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ width: 0, height: 0, borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: '10px solid #0B0B0B', marginLeft: 3 }} />
                           </span>
                         </>
                       : <img src={src} alt="" loading="lazy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}
@@ -213,10 +213,10 @@ export default function Product() {
               {VIEWS.map((v, i) => (
                 <button
                   key={v} className="ph" onClick={() => { setImg(i); setZoom(false); }} aria-label={`Vue ${v}`} aria-pressed={i === shown}
-                  style={{ aspectRatio: '1', padding: 0, cursor: 'pointer', backgroundImage: p.image ? 'none' : 'repeating-linear-gradient(135deg,rgba(13,14,17,.04) 0 1px,transparent 1px 9px)', background: p.image && i === 0 ? 'var(--card)' : undefined, border: `1px solid ${i === shown ? 'var(--ink)' : 'transparent'}`, display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-start', overflow: 'hidden', position: 'relative' }}
+                  style={{ aspectRatio: '1', padding: 0, cursor: 'pointer', backgroundImage: 'none', background: p.image && i === 0 ? 'var(--card)' : undefined, border: `1px solid ${i === shown ? 'var(--ink)' : 'transparent'}`, display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-start', overflow: 'hidden', position: 'relative' }}
                 >
                   {p.image && i === 0 && <img src={p.image} alt={v} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />}
-                  <span style={{ position: 'relative', zIndex: 1, padding: 8, fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: p.image ? 'rgba(13,14,17,.6)' : 'var(--graphite)', textAlign: 'left' }}>{v}</span>
+                  <span style={{ position: 'relative', zIndex: 1, padding: 8, fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: p.image ? 'rgba(11,11,11,.6)' : 'var(--graphite)', textAlign: 'left' }}>{v}</span>
                 </button>
               ))}
             </div>
@@ -224,24 +224,24 @@ export default function Product() {
           </div>
 
           <div data-reveal style={{ position: L.sticky, top: 110, display: 'flex', flexDirection: 'column', gap: 22, paddingTop: 6 }}>
-            <span className="mono" style={{ fontSize: 10.5 }}>Collection {p.col} · Réf. {ref}</span>
-            <h1 className="display" style={{ margin: '-8px 0 0', fontSize: L.mobile ? 44 : 56, textTransform: 'uppercase' }}>{p.name}</h1>
+            <span className="mono">N° {ref} · {p.col}</span>
+            <h1 className="display" style={{ margin: '-6px 0 0', fontSize: 'clamp(52px, 5vw, 76px)' }}>{p.name}</h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13 }}>
               <span style={{ letterSpacing: '.12em' }}>{stars(p.rating)}</span><span>{ratingF(p.rating)}</span>
               <span style={{ color: 'var(--graphite)' }}>· {p.reviews} avis</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: 14, padding: '18px 0', borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
-              <span style={{ fontStretch: '110%', fontSize: 28, fontWeight: 500 }}>{fmt(price)}</span>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 22 }}>{fmt(price)}</span>
               {old && (
                 <>
                   <span style={{ fontSize: 16, color: 'var(--graphite)', textDecoration: 'line-through' }}>{fmt(old)}</span>
-                  <span style={{ padding: '5px 10px', borderRadius: 999, background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 10.5, letterSpacing: '.08em' }}>{pct(price, old)}</span>
+                  <span style={{ padding: '5px 10px', background: 'var(--ink)', color: 'var(--ivory)', fontFamily: 'var(--mono)', fontSize: 12 }}>{pct(price, old)}</span>
                 </>
               )}
               <span style={{ flexBasis: '100%', fontSize: 12.5, color: 'var(--graphite)' }}>TTC · paiement à la livraison ou par virement</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: canBuy ? 'var(--ink)' : 'var(--faint)', boxShadow: '0 0 0 4px var(--line)' }} />{stockText}
+              <span style={{ width: 7, height: 7, background: canBuy ? 'var(--ink)' : 'var(--faint)', boxShadow: '0 0 0 4px var(--line)' }} />{stockText}
             </div>
             <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.7, color: 'var(--body)', textWrap: 'pretty' }}>{p.desc}</p>
             {(p.options ?? []).map((o) => {
@@ -258,7 +258,7 @@ export default function Product() {
                       const title = v.label + (ok ? '' : ' — épuisé');
                       return isColor ? (
                         <button key={v.label} role="radio" aria-checked={on} aria-label={title} title={title} onClick={() => choose(o.name, v.label)}
-                          style={{ position: 'relative', width: 40, height: 40, borderRadius: '50%', padding: 0, cursor: 'pointer', background: v.colorHex ?? 'var(--paper)', border: 0, boxShadow: on ? '0 0 0 2px var(--ivory), 0 0 0 3px var(--ink)' : 'inset 0 0 0 1px rgba(13,14,17,.2)', opacity: ok ? 1 : 0.45, transition: 'box-shadow .25s' }}>
+                          style={{ position: 'relative', width: 44, height: 44, padding: 0, cursor: 'pointer', background: v.colorHex ?? 'var(--paper)', border: 0, boxShadow: on ? '0 0 0 2px var(--ivory), 0 0 0 3px var(--ink)' : 'inset 0 0 0 1px #3A3A3A', opacity: ok ? 1 : 0.45, transition: 'box-shadow .25s' }}>
                           {!ok && <span aria-hidden style={{ position: 'absolute', left: '50%', top: 4, bottom: 4, width: 1, background: 'var(--ink)', transform: 'rotate(45deg)' }} />}
                         </button>
                       ) : (
@@ -279,8 +279,8 @@ export default function Product() {
                     const on = pack === n;
                     return (
                       <button key={n} role="radio" aria-checked={on} onClick={() => setPack(n)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', borderRadius: 14, cursor: 'pointer', textAlign: 'left', background: on ? 'var(--paper)' : 'transparent', border: `1.5px solid ${on ? 'var(--ink)' : 'var(--line-strong)'}`, transition: 'border-color .2s' }}>
-                        <span aria-hidden style={{ width: 18, height: 18, borderRadius: '50%', flex: 'none', border: `1.5px solid ${on ? 'var(--ink)' : 'var(--line-strong)'}`, boxShadow: on ? 'inset 0 0 0 4px var(--paper)' : 'none', background: on ? 'var(--ink)' : 'transparent' }} />
+                        style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', cursor: 'pointer', textAlign: 'left', background: on ? 'var(--paper)' : 'transparent', border: `1.5px solid ${on ? 'var(--ink)' : 'var(--line-strong)'}`, transition: 'border-color .2s' }}>
+                        <span aria-hidden style={{ width: 18, height: 18, flex: 'none', border: `1.5px solid ${on ? 'var(--ink)' : 'var(--line-strong)'}`, boxShadow: on ? 'inset 0 0 0 4px var(--paper)' : 'none', background: on ? 'var(--ink)' : 'transparent' }} />
                         <span style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
                           <span style={{ fontSize: 15, fontWeight: 600 }}>{n === 1 ? '1 article' : `${n} articles`}</span>
                           {total < sum && <span style={{ fontSize: 12.5, color: 'var(--graphite)' }}>Économisez {fmt(sum - total)}</span>}
@@ -294,7 +294,7 @@ export default function Product() {
                   })}
                 </div>
                 {pack > 1 && p.variants.length > 1 && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px 16px', background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: 14 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px 16px', background: 'var(--paper)', border: '1px solid var(--line)' }}>
                     <span style={{ ...label, color: 'var(--graphite)' }}>Choix de chaque article</span>
                     {unitVariants(pack).map((uv, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
@@ -310,7 +310,7 @@ export default function Product() {
                               const pick = () => setExtra((xs) => { const next = [...xs]; next[i - 1] = v.id; return next; });
                               return hex ? (
                                 <button key={v.id} role="radio" aria-checked={on} aria-label={name} title={name} onClick={pick}
-                                  style={{ width: 32, height: 32, borderRadius: '50%', padding: 0, cursor: 'pointer', background: hex, border: 0, boxShadow: on ? '0 0 0 2px var(--ivory), 0 0 0 3px var(--ink)' : 'inset 0 0 0 1px rgba(13,14,17,.2)' }} />
+                                  style={{ width: 32, height: 32, padding: 0, cursor: 'pointer', background: hex, border: 0, boxShadow: on ? '0 0 0 2px var(--ivory), 0 0 0 3px var(--ink)' : 'inset 0 0 0 1px #3A3A3A' }} />
                               ) : (
                                 <button key={v.id} role="radio" aria-checked={on} className={`chip${on ? ' active' : ''}`} onClick={pick} style={{ height: 36, padding: '0 14px', fontSize: 12.5 }}>{name}</button>
                               );
@@ -326,7 +326,7 @@ export default function Product() {
             )}
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               {!offers.length && <QtyStepper qty={qty} h={56} onDec={() => setQty((q) => Math.max(1, q - 1))} onInc={() => setQty((q) => q + 1)} />}
-              <button className="btn btn-primary btn-tall" disabled={!canBuy} style={{ flex: 1, minWidth: 200, opacity: canBuy ? 1 : 0.4 }} onClick={buy}>{canBuy ? 'Ajouter au panier' : p.purchasable ? 'Épuisé' : 'Non disponible à la vente'}</button>
+              <button className="btn btn-primary btn-tall" disabled={!canBuy} style={{ flex: 1, minWidth: 200, opacity: canBuy ? 1 : 0.4 }} onClick={buy}>{canBuy ? '+ Ajouter au panier' : p.purchasable ? 'Épuisé' : 'Non disponible à la vente'}</button>
             </div>
             {canBuy && (
               <button className="btn btn-outline btn-tall" onClick={buyNow}>
@@ -362,7 +362,7 @@ export default function Product() {
       <section data-reveal style={{ padding: `${L.sec} ${L.px} 0`, display: 'grid', gridTemplateColumns: L.split2, gap: L.pGap }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'flex-start' }}>
           <span className="eyebrow">Avis clients</span>
-          <span style={{ fontFamily: 'var(--display-font)', fontSize: 64, fontWeight: 800, lineHeight: 1 }}>{ratingF(p.rating)}</span>
+          <span style={{ fontFamily: 'var(--display-font)', fontSize: 64, lineHeight: 1 }}>{ratingF(p.rating)}</span>
           <span style={{ letterSpacing: '.14em' }}>{stars(p.rating)}</span>
           <span style={{ fontSize: 13.5, color: 'var(--graphite)' }}>Basé sur {p.reviews} avis vérifiés</span>
           <button className="btn btn-outline" style={{ marginTop: 8, height: 48, padding: '0 24px', fontSize: 11.5 }}>Écrire un avis</button>
@@ -385,8 +385,8 @@ export default function Product() {
       {similar.length > 0 && (
         <section style={{ padding: `${L.sec} ${L.px} 0`, display: 'flex', flexDirection: 'column', gap: 32 }}>
           <div data-reveal style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <span className="eyebrow">Complète ta tenue</span>
-            <h2 className="display" style={{ fontSize: L.h3 }}>Tu vas aimer aussi</h2>
+            <span className="eyebrow">{String(similar.length).padStart(2, '0')} pièces</span>
+            <h2 className="display" style={{ fontSize: 48 }}>À porter avec</h2>
           </div>
           <ProductGrid items={similar} />
         </section>
@@ -394,7 +394,7 @@ export default function Product() {
 
       {L.mobile && (
         // Barre d'achat mobile : prix et coloris, ajout au panier (icône) et achat direct vers le formulaire de commande.
-        <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 45, background: 'rgba(242,241,236,.96)', backdropFilter: 'blur(12px)', borderTop: '1px solid var(--line)', padding: '10px 16px calc(10px + env(safe-area-inset-bottom))', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 45, background: '#0B0B0B', borderTop: '1px solid var(--line)', padding: '10px 16px calc(10px + env(safe-area-inset-bottom))', display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1, minWidth: 0, flex: 'none', maxWidth: '34%' }}>
             <span style={{ fontSize: 16, fontWeight: 600, whiteSpace: 'nowrap' }}>{fmt(packTotal)}</span>
             {packTotal < packSum

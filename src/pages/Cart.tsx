@@ -37,7 +37,7 @@ export default function Cart() {
                   <Link to={productPath(p.id)} className="ph" aria-label={p.name} style={{ aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {l.image
                       ? <img src={l.image} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                      : <span style={{ width: '50%', aspectRatio: '1', borderRadius: '50%', border: '1px solid rgba(13,14,17,.15)' }} />}
+                      : <span style={{ width: '50%', aspectRatio: '1', borderRadius: '50%', border: '1px solid rgba(245,245,243,.15)' }} />}
                   </Link>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
@@ -66,7 +66,7 @@ export default function Cart() {
               <span style={{ fontWeight: 600 }}>Total TTC</span>
               <span style={{ fontStretch: '110%', fontSize: 24, fontWeight: 500 }}>{fmt(s.subtotal - s.qtyDiscount)}</span>
             </div>
-            {s.nextTier && <span style={{ fontSize: 13, padding: '10px 12px', background: 'var(--accent)', color: '#0D0E11', lineHeight: 1.4 }}>Ajoutez {s.nextTier.missing} {s.nextTier.productName ?? `article${s.nextTier.missing > 1 ? 's' : ''}`} et économisez <strong>{fmt(s.nextTier.amount)}</strong> sur votre commande.</span>}
+            {s.nextTier && <span style={{ fontSize: 13, padding: '10px 12px', background: 'var(--accent)', color: '#0B0B0B', lineHeight: 1.4 }}>Ajoutez {s.nextTier.missing} {s.nextTier.productName ?? `article${s.nextTier.missing > 1 ? 's' : ''}`} et économisez <strong>{fmt(s.nextTier.amount)}</strong> sur votre commande.</span>}
             <button className="btn btn-primary btn-tall" style={{ marginTop: 8 }} onClick={() => navigate(PATHS.checkout)}>Passer commande</button>
             <span style={{ fontSize: 12.5, color: 'var(--graphite)', lineHeight: 1.5 }}>Livraison incluse partout au Maroc · Paiement à la livraison ou par virement bancaire</span>
           </aside>
@@ -256,7 +256,7 @@ export function Checkout() {
             <span className="mono">Votre commande</span>
             {s.items.map((l) => (
               <div key={l.key} style={{ display: 'grid', gridTemplateColumns: '56px minmax(0,1fr) auto', gap: 14, alignItems: 'center' }}>
-                <span className="ph" style={{ aspectRatio: '1', backgroundImage: l.image ? `url("${l.image}")` : 'repeating-linear-gradient(135deg,rgba(13,14,17,.05) 0 1px,transparent 1px 7px)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                <span className="ph" style={{ aspectRatio: '1', backgroundImage: l.image ? `url("${l.image}")` : 'repeating-linear-gradient(135deg,rgba(245,245,243,.05) 0 1px,transparent 1px 7px)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
                 <span style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <span style={{ fontSize: 13.5, fontWeight: 600, textTransform: 'uppercase' }}>{l.product.name}</span>
                   <span style={{ fontSize: 12.5, color: 'var(--graphite)' }}>{l.label ? l.label + ' · ' : ''}Qté {l.qty}</span>
@@ -266,7 +266,7 @@ export function Checkout() {
             ))}
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, paddingTop: 14, borderTop: '1px solid var(--line)' }}><span>Sous-total</span><span>{fmt(quote ? quote.subtotalCents / 100 : s.subtotal)}</span></div>
             {discount > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}><span>{quote?.discountLabel ?? `Code ${quote?.couponCode}`}</span><span>−{fmt(discount)}</span></div>}
-            {quote?.nextTier && <span style={{ fontSize: 13, padding: '10px 12px', background: 'var(--accent)', color: '#0D0E11', lineHeight: 1.4 }}>Ajoutez {quote.nextTier.missing} {quote.nextTier.productName ?? `article${quote.nextTier.missing > 1 ? 's' : ''}`} et économisez <strong>{fmt(quote.nextTier.amountCents / 100)}</strong> sur votre commande.</span>}
+            {quote?.nextTier && <span style={{ fontSize: 13, padding: '10px 12px', background: 'var(--accent)', color: '#0B0B0B', lineHeight: 1.4 }}>Ajoutez {quote.nextTier.missing} {quote.nextTier.productName ?? `article${quote.nextTier.missing > 1 ? 's' : ''}`} et économisez <strong>{fmt(quote.nextTier.amountCents / 100)}</strong> sur votre commande.</span>}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', paddingTop: 14, borderTop: '1px solid var(--line)' }}>
               <span style={{ fontWeight: 600 }}>Total TTC</span>
               <span style={{ fontStretch: '110%', fontSize: 22, fontWeight: 500 }}>{fmt(total)}</span>

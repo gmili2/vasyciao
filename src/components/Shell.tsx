@@ -5,159 +5,135 @@ import { fmt } from '../data';
 import { useLayout } from '../layout';
 import { PATHS, productPath, shopPath } from '../routes';
 import { useStore } from '../store';
-import { ArrowIcon, BagIcon, CloseIcon, MenuIcon, SearchIcon, UserIcon } from './icons';
+import { CloseIcon, MenuIcon, SearchIcon } from './icons';
 
-const NAV: { label: string; to: string; match: (path: string) => boolean; hot?: boolean }[] = [
-  { label: 'Homme', to: shopPath('homme'), match: (p) => p === shopPath('homme') },
+const NAV: { label: string; to: string; match: (path: string) => boolean }[] = [
   { label: 'Femme', to: shopPath('femme'), match: (p) => p === shopPath('femme') },
-  { label: 'Running', to: shopPath('running'), match: (p) => p === shopPath('running') },
-  { label: 'Training', to: shopPath('training'), match: (p) => p === shopPath('training') },
-  { label: 'Accessoires', to: shopPath('accessoires'), match: (p) => p === shopPath('accessoires') },
-  { label: 'Promos', to: shopPath('promo'), match: (p) => p === shopPath('promo'), hot: true },
+  { label: 'Homme', to: shopPath('homme'), match: (p) => p === shopPath('homme') },
+  { label: 'Lookbook', to: '/#lookbook', match: () => false },
+  { label: 'Shop', to: shopPath('all'), match: (p) => p.startsWith('/produits') && p !== shopPath('femme') && p !== shopPath('homme') },
 ];
 
-/** Symbole Pestave : « P » en mouvement (Volt) et ses deux traits de vitesse. */
+/** Symbole Vasyciao (infini et V), blanc sur fond sombre ; `light` ou `mono` : version noire pour fond clair. */
 export function Logo({ size, light = false, mono }: { size: number; light?: boolean; mono?: string }) {
-  const p = mono ?? 'var(--accent)';
-  const speed = mono ?? (light ? '#0D0E11' : '#F2F1EC');
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100" role="img" aria-label="Pestave" style={{ flex: 'none', overflow: 'visible' }}>
-      <polygon points="20,90 38,90 56,10 38,10" fill={p} />
-      <path d="M46,10 H72 C88,10 94,23 91,37 C88,51 77,59 61,59 H47 L50.5,44 H62 C69,44 73,40 74,35 C75,29 72,25 66,25 H42.5 Z" fill={p} />
-      <polygon points="2,74 16,74 13.5,84 -0.5,84" fill={speed} />
-      <polygon points="6,58 20,58 17.5,68 3.5,68" fill={speed} />
-    </svg>
-  );
+  const dark = light || !!mono;
+  return <img src={dark ? '/mark-black.png' : '/mark-white.png'} alt="Vasyciao" width={Math.round(size * 1.4)} height={Math.round(size * 0.68)} style={{ flex: 'none', display: 'block', objectFit: 'contain' }} />;
 }
 
-/** Mot « PESTAVE » en Barlow Condensed Black Italic. */
+/** Mot « VASYCIAO » en Anton. */
 export function Wordmark({ size }: { size: number }) {
-  return <span style={{ fontFamily: 'var(--display-font)', fontStyle: 'italic', fontWeight: 900, fontSize: size, lineHeight: 1, letterSpacing: '-0.5px', whiteSpace: 'nowrap' }}>PESTAVE</span>;
+  return <span style={{ fontFamily: 'var(--display-font)', fontSize: size, lineHeight: 1, whiteSpace: 'nowrap' }}>VASYCIAO</span>;
 }
 
-function Brand({ size }: { size: number }) {
+/** Logo complet (symbole + nom), tel que dans la maquette. */
+function Brand({ h }: { h: number }) {
   return (
-    <Link to="/" aria-label="PESTAVE — accueil" style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--ink)' }}>
-      <Logo size={size} />
-      <Wordmark size={size * 0.95} />
+    <Link to="/" aria-label="Vasyciao — accueil" style={{ display: 'block', flex: 'none' }}>
+      <img src="/logo-white.png" alt="Vasyciao" height={h} width={Math.round(h * 600 / 396)} style={{ display: 'block' }} />
     </Link>
   );
 }
 
 export function TopBar() {
   return (
-    <div style={{ background: 'var(--accent)', color: '#0D0E11', textAlign: 'center', fontSize: 13, fontWeight: 600, letterSpacing: '.5px', padding: '10px 16px' }}>
-      Livraison offerte partout au Maroc — Paiement à la livraison
+    <div className="light" style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', fontFamily: 'var(--mono)', fontSize: 12, letterSpacing: '.08em', padding: '9px 16px', textAlign: 'center' }}>
+      LIVRAISON PARTOUT AU MAROC  ✕  ÉCHANGE SOUS 7 JOURS  ✕  NOUVELLE COLLECTION 2026  ✕  PAIEMENT À LA LIVRAISON
     </div>
   );
 }
 
-function CartButton() {
-  const { count, openDrawer } = useStore();
-  return (
-    <button className="icon-btn" onClick={openDrawer} aria-label={`Panier, ${count} article${count > 1 ? 's' : ''}`}>
-      <BagIcon size={22} />
-      {count > 0 && <span className="badge-count">{count}</span>}
-    </button>
-  );
-}
+const cartBtn: React.CSSProperties = { border: 0, background: '#F5F5F3', color: '#0B0B0B', fontFamily: 'var(--mono)', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' };
 
 export function Header() {
   const L = useLayout();
   const { pathname } = useLocation();
-  const { openSearch, openMenu } = useStore();
-  const wrap: React.CSSProperties = {
-    position: 'sticky', top: 0, zIndex: 40,
-    background: 'rgba(13,14,17,.96)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
-  };
+  const { openSearch, openMenu, openDrawer, count, menu } = useStore();
+  const wrap: React.CSSProperties = { position: 'sticky', top: 0, zIndex: 40, background: '#0B0B0B', borderBottom: '1px solid #2A2A2A' };
   if (L.mobile) {
     return (
-      <header className="dark" style={wrap}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64, padding: '0 8px' }}>
-          <button className="icon-btn" onClick={openMenu} aria-label="Menu"><MenuIcon size={22} /></button>
-          <Brand size={30} />
-          <div style={{ display: 'flex' }}>
-            <button className="icon-btn" onClick={openSearch} aria-label="Rechercher"><SearchIcon size={22} /></button>
-            <CartButton />
+      <header style={wrap}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64, padding: '0 10px 0 20px', gap: 8 }}>
+          <Brand h={44} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <button className="icon-btn" onClick={openSearch} aria-label="Rechercher"><SearchIcon size={20} /></button>
+            <button onClick={openDrawer} aria-label={`Panier, ${count} article${count > 1 ? 's' : ''}`} style={{ ...cartBtn, height: 40, padding: '0 12px', fontSize: 12 }}>({count})</button>
+            <button className="icon-btn" onClick={openMenu} aria-label="Menu" aria-expanded={menu}><MenuIcon size={22} /></button>
           </div>
         </div>
       </header>
     );
   }
   return (
-    <header className="dark" style={wrap}>
-      <div style={{ maxWidth: 1320, margin: '0 auto', padding: '18px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px 32px' }}>
-        <Brand size={36} />
-        <nav aria-label="Navigation principale" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 28px' }}>
+    <header style={wrap}>
+      <div style={{ maxWidth: 1440, margin: '0 auto', padding: '0 24px', height: 76, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
+        <Brand h={56} />
+        <nav aria-label="Navigation principale" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {NAV.map((n) => (
-            <Link key={n.label} to={n.to} className={`nav-link${n.match(pathname) ? ' on' : ''}`} style={n.hot ? { color: 'var(--accent)' } : undefined}>{n.label}</Link>
+            <Link key={n.label} to={n.to} className={`nav-link${n.match(pathname) ? ' on' : ''}`}>[ {n.label} ]</Link>
           ))}
+          <span aria-hidden="true" style={{ width: 1, height: 24, background: '#2A2A2A', margin: '0 10px' }} />
+          <button className="nav-link" onClick={openSearch} style={{ background: 'none', border: 0, cursor: 'pointer', padding: '14px 10px' }}>Recherche</button>
+          <Link className="nav-link" to={PATHS.account} style={{ padding: '14px 10px' }}>Compte</Link>
+          <button onClick={openDrawer} style={{ ...cartBtn, height: 44, padding: '0 16px', fontSize: 13 }}>PANIER ({count})</button>
         </nav>
-        <div style={{ display: 'flex', gap: 4 }}>
-          <button className="icon-btn" onClick={openSearch} aria-label="Rechercher"><SearchIcon size={22} /></button>
-          <Link className="icon-btn" to={PATHS.account} aria-label="Mon compte"><UserIcon size={22} /></Link>
-          <CartButton />
-        </div>
       </div>
     </header>
   );
 }
 
 const FOOTER = [
-  { t: 'Boutique', links: [['Homme', shopPath('homme')], ['Femme', shopPath('femme')], ['Accessoires', shopPath('accessoires')], ['Promos', shopPath('promo')]] },
-  { t: 'Aide', links: [['Livraison & retours', PATHS.faq], ['Guide des tailles', PATHS.faq], ['Contact', PATHS.contact], ['Mon compte', PATHS.account]] },
-  { t: 'Infos', links: [['À propos', PATHS.about], ['Conditions générales', PATHS.cgv], ['Confidentialité', PATHS.privacy]] },
+  { t: 'BOUTIQUE', links: [['Femme', shopPath('femme')], ['Homme', shopPath('homme')], ['Nouveautés', shopPath('new')], ['Shop', shopPath('all')]] },
+  { t: 'AIDE', links: [['Livraison & retours', PATHS.faq], ['Guide des tailles', PATHS.faq], ['Contact', PATHS.contact], ['Mon compte', PATHS.account]] },
+  { t: 'INFOS', links: [['À propos', PATHS.about], ['Conditions générales', PATHS.cgv], ['Confidentialité', PATHS.privacy], ['Administration', PATHS.admin]] },
 ];
 
 export function Footer() {
-  const L = useLayout();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   return (
-    <div className="dark">
-      <section style={{ maxWidth: 1320, margin: '0 auto', padding: L.mobile ? '56px 20px' : '72px 24px', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 32 }}>
-        <div style={{ flex: '1 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <h2 className="display" style={{ fontSize: L.mobile ? 40 : 52, lineHeight: 0.95, textTransform: 'uppercase' }}>Rejoins la team Pestave</h2>
-          <p style={{ margin: 0, fontSize: 16, color: 'var(--muted)' }}>
-            {subscribed ? 'Bienvenue dans la team ! Tu recevras nos prochains drops en avant-première.' : 'Nouveautés, drops exclusifs et offres réservées aux membres.'}
-          </p>
+    <>
+      <section aria-label="Newsletter" className="light">
+        <div style={{ maxWidth: 1440, margin: '0 auto', padding: '64px 24px', display: 'flex', flexWrap: 'wrap', gap: 32, alignItems: 'flex-end', justifyContent: 'space-between' }}>
+          <h2 className="display" style={{ flex: '1 1 420px', minWidth: 0, fontSize: 'clamp(44px, 5vw, 80px)', lineHeight: 0.95 }}>Les nouveautés<br />en premier</h2>
+          {subscribed ? (
+            <p style={{ flex: '1 1 420px', margin: 0, fontFamily: 'var(--mono)', fontSize: 14 }}>C’EST NOTÉ. TU RECEVRAS LES PROCHAINES PIÈCES AVANT TOUT LE MONDE.</p>
+          ) : (
+            <form onSubmit={(e) => { e.preventDefault(); if (/^\S+@\S+\.\S+$/.test(email)) setSubscribed(true); }} style={{ flex: '1 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <label htmlFor="vc-email" style={{ fontFamily: 'var(--mono)', fontSize: 12 }}>TON E-MAIL</label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', borderBottom: '2px solid #0B0B0B' }}>
+                <input id="vc-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="nom@exemple.com"
+                  style={{ flex: '1 1 200px', minWidth: 0, height: 56, border: 0, background: 'transparent', color: '#0B0B0B', fontSize: 20, padding: 0, outline: 'none' }} />
+                <button type="submit" style={{ height: 56, padding: '0 4px', background: 'transparent', border: 0, color: '#0B0B0B', fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>S’INSCRIRE →</button>
+              </div>
+            </form>
+          )}
         </div>
-        {!subscribed && (
-          <form onSubmit={(e) => { e.preventDefault(); if (/^\S+@\S+\.\S+$/.test(email)) setSubscribed(true); }} style={{ flex: '1 1 420px', minWidth: 0, display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-            <input
-              type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Ton adresse e-mail" aria-label="Adresse e-mail"
-              style={{ flex: '1 1 240px', minWidth: 0, height: 52, padding: '0 20px', borderRadius: 999, border: '1px solid var(--line-strong)', background: 'var(--paper)', color: 'var(--ink)', fontSize: 15, outline: 'none' }}
-            />
-            <button type="submit" className="btn btn-primary" style={{ height: 52, padding: '0 28px' }}>S’inscrire</button>
-          </form>
-        )}
       </section>
-      <footer style={{ borderTop: '1px solid var(--line)', color: 'var(--muted)' }}>
-        <div style={{ maxWidth: 1320, margin: '0 auto', padding: '56px 24px 32px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 32 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--ink)' }}><Logo size={34} /><Wordmark size={36} /></span>
-            <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5 }}>Vêtements de sport pour celles et ceux qui avancent.</p>
-          </div>
+      <footer style={{ background: '#0B0B0B', containerType: 'inline-size' }}>
+        <div style={{ maxWidth: 1440, margin: '0 auto', padding: '48px 24px 0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: 28, fontFamily: 'var(--mono)', fontSize: 13 }}>
           {FOOTER.map((g) => (
-            <nav key={g.t} aria-label={g.t} style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 14 }}>
-              <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>{g.t}</h3>
+            <nav key={g.t} aria-label={g.t} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <span style={{ color: '#8C8C8C' }}>{g.t}</span>
               {g.links.map(([label, to]) => <Link key={label} to={to}>{label}</Link>)}
             </nav>
           ))}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <span style={{ color: '#8C8C8C' }}>©</span>
+            <span>2026 Vasyciao</span>
+            <span>Tous droits réservés</span>
+            <span style={{ color: '#8C8C8C' }}>Paiement à la livraison · Virement</span>
+          </div>
         </div>
-        <div style={{ maxWidth: 1320, margin: '0 auto', padding: '24px 24px 32px', borderTop: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, fontSize: 13 }}>
-          <span>© 2026 Pestave. Tous droits réservés.</span>
-          <span style={{ display: 'flex', gap: 20 }}><span>Paiement à la livraison · Virement bancaire</span><Link to={PATHS.admin}>Administration</Link></span>
-        </div>
+        <p aria-hidden="true" style={{ margin: '24px 0 0', padding: '0 12px', fontFamily: 'var(--display-font)', fontSize: '22.5cqw', lineHeight: 0.8, textAlign: 'center', color: '#F5F5F3', overflow: 'hidden', whiteSpace: 'nowrap' }}>VASYCIAO</p>
       </footer>
-    </div>
+    </>
   );
 }
 
 function QtyStepper({ qty, onDec, onInc, h = 36 }: { qty: number; onDec: () => void; onInc: () => void; h?: number }) {
   const b: React.CSSProperties = { width: h - 2, height: h - 2, border: 0, background: 'none', cursor: 'pointer', fontSize: 16 };
   return (
-    <div style={{ display: 'flex', alignItems: 'center', height: h, border: '1px solid var(--line-strong)', borderRadius: 999, background: 'var(--paper)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', height: h, border: '1px solid var(--line-strong)', background: 'transparent' }}>
       <button style={b} onClick={onDec} aria-label="Diminuer la quantité">−</button>
       <span style={{ minWidth: 16, textAlign: 'center', fontSize: 13.5 }}>{qty}</span>
       <button style={b} onClick={onInc} aria-label="Augmenter la quantité">+</button>
@@ -200,7 +176,7 @@ export function Overlays() {
         style={{ position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 70, width: 'min(440px,100vw)', background: 'var(--ivory)', display: 'flex', flexDirection: 'column', transform: s.drawer ? 'translateX(0)' : 'translateX(105%)', transition: 'transform .6s var(--ease)', boxShadow: '-20px 0 60px rgba(0,0,0,.5)', borderLeft: '1px solid var(--line)', visibility: s.drawer ? 'visible' : 'hidden', transitionProperty: 'transform, visibility' }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px', borderBottom: '1px solid var(--line)' }}>
-          <span className="display" style={{ textTransform: 'uppercase', fontSize: 26 }}>Panier · {s.count}</span>
+          <span className="display" style={{ fontSize: 32 }}>Panier ({s.count})</span>
           <button className="icon-btn" onClick={s.closeAll} aria-label="Fermer"><CloseIcon /></button>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px' }}>
@@ -212,7 +188,7 @@ export function Overlays() {
                 <button className="ph" onClick={() => go(productPath(p.id))} aria-label={p.name} style={{ aspectRatio: '1', border: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                   {l.image
                     ? <img src={l.image} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                    : <span style={{ width: '52%', aspectRatio: '1', borderRadius: '50%', border: '1px solid rgba(13,14,17,.15)' }} />}
+                    : <span style={{ width: '52%', aspectRatio: '1', borderRadius: '50%', border: '1px solid #3A3A3A' }} />}
                 </button>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
@@ -237,7 +213,7 @@ export function Overlays() {
             <span style={{ fontSize: 14 }}>{s.qtyDiscount > 0 ? 'Total' : 'Sous-total'} · livraison incluse</span>
             <span style={{ fontStretch: '110%', fontSize: 20, fontWeight: 500 }}>{fmt(s.subtotal - s.qtyDiscount)}</span>
           </div>
-          {s.nextTier && <span style={{ fontSize: 13, padding: '10px 12px', background: 'var(--accent)', color: '#0D0E11', lineHeight: 1.4 }}>Ajoutez {s.nextTier.missing} {s.nextTier.productName ?? `article${s.nextTier.missing > 1 ? 's' : ''}`} et économisez <strong>{fmt(s.nextTier.amount)}</strong> sur votre commande.</span>}
+          {s.nextTier && <span style={{ fontSize: 13, padding: '10px 12px', background: '#F5F5F3', color: '#0B0B0B', lineHeight: 1.4 }}>Ajoutez {s.nextTier.missing} {s.nextTier.productName ?? `article${s.nextTier.missing > 1 ? 's' : ''}`} et économisez <strong>{fmt(s.nextTier.amount)}</strong> sur votre commande.</span>}
           <button className="btn btn-primary" disabled={s.count === 0} onClick={() => go(PATHS.checkout)} style={{ opacity: s.count === 0 ? 0.4 : 1 }}>Commander</button>
           <button className="btn btn-outline" style={{ height: 50 }} onClick={() => go(PATHS.cart)}>Voir le panier</button>
         </div>
@@ -246,24 +222,21 @@ export function Overlays() {
       {/* Menu mobile */}
       <div
         aria-hidden={!s.menu}
-        className="dark"
-        style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#0D0E11', color: '#F2F1EC', display: 'flex', flexDirection: 'column', padding: '12px 20px 32px', opacity: s.menu ? 1 : 0, pointerEvents: s.menu ? 'auto' : 'none', transition: 'opacity .45s ease', visibility: s.menu ? 'visible' : 'hidden' }}
+        style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#0B0B0B', color: '#F5F5F3', display: 'flex', flexDirection: 'column', padding: '10px 20px 32px', opacity: s.menu ? 1 : 0, pointerEvents: s.menu ? 'auto' : 'none', transition: 'opacity .35s ease', visibility: s.menu ? 'visible' : 'hidden', overflowY: 'auto' }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 52 }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><Logo size={30} /><Wordmark size={30} /></span>
-          <button className="icon-btn" onClick={s.closeAll} aria-label="Fermer" style={{ background: 'transparent' }}><CloseIcon color="#fff" size={20} /></button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 44, borderBottom: '1px solid #2A2A2A', paddingBottom: 10 }}>
+          <img src="/logo-white.png" alt="Vasyciao" height={40} width={61} />
+          <button className="icon-btn" onClick={s.closeAll} aria-label="Fermer le menu" style={{ background: 'transparent', marginRight: -10 }}><CloseIcon color="#F5F5F3" size={20} /></button>
         </div>
-        <nav style={{ display: 'flex', flexDirection: 'column', marginTop: 36 }}>
-          {NAV.map((n) => (
-            <button key={n.label} onClick={() => go(n.to)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 0', background: 'none', border: 0, borderBottom: '1px solid #2A2C33', color: '#F2F1EC', cursor: 'pointer', fontFamily: 'var(--display-font)', fontStyle: 'italic', fontWeight: 900, textTransform: 'uppercase', fontSize: 30, textAlign: 'left' }}>
-              {n.label}<ArrowIcon color="#fff" />
+        <nav aria-label="Menu mobile" style={{ display: 'flex', flexDirection: 'column', marginTop: 8 }}>
+          {[...NAV, { label: 'Nouveautés', to: shopPath('new') }].map((n) => (
+            <button key={n.label} onClick={() => go(n.to)} style={{ display: 'block', padding: '6px 0', background: 'none', border: 0, borderBottom: '1px solid #2A2A2A', color: '#F5F5F3', cursor: 'pointer', fontFamily: 'var(--display-font)', textTransform: 'uppercase', fontSize: 44, lineHeight: 1.1, textAlign: 'left' }}>
+              {n.label}
             </button>
           ))}
+          <button onClick={() => go(PATHS.account)} style={{ textAlign: 'left', background: 'none', border: 0, color: '#F5F5F3', fontFamily: 'var(--mono)', fontSize: 13, padding: '16px 0 0', cursor: 'pointer' }}>MON COMPTE →</button>
         </nav>
-        <div style={{ marginTop: 'auto', display: 'flex', gap: 10 }}>
-          <button className="btn btn-ghost-light" style={{ flex: 1, height: 52, padding: 0 }} onClick={() => go(PATHS.account)}>Mon compte</button>
-          <button className="btn btn-light" style={{ flex: 1, height: 52, padding: 0 }} onClick={() => go(PATHS.cart)}>Panier ({s.count})</button>
-        </div>
+        <button className="btn btn-light" style={{ marginTop: 'auto', height: 52 }} onClick={() => go(PATHS.cart)}>PANIER ({s.count})</button>
       </div>
 
       {/* Recherche */}
@@ -276,7 +249,7 @@ export function Overlays() {
           <input
             ref={searchRef} value={q} onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && results[0]) go(productPath(results[0].id)); }}
-            placeholder="Rechercher un legging, un t-shirt, un short…" aria-label="Rechercher"
+            placeholder="Rechercher une veste, un pull, une robe…" aria-label="Rechercher"
             style={{ flex: 1, minWidth: 0, height: 48, border: 0, background: 'transparent', fontSize: L.searchFs, fontStretch: '110%', outline: 'none', color: 'var(--ink)' }}
           />
           <button className="icon-btn" onClick={s.closeAll} aria-label="Fermer"><CloseIcon /></button>

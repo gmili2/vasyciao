@@ -19,11 +19,11 @@ export type ApiShopProduct = {
 };
 
 type Tag = Exclude<CategoryId, 'all'>;
-const TAGS: Tag[] = ['homme', 'femme', 'running', 'training', 'football', 'yoga', 'accessoires', 'new', 'promo'];
+const TAGS: Tag[] = ['homme', 'femme', 'vestes', 'hauts', 'pantalons', 'robes', 'accessoires', 'new', 'promo'];
 /** Catégorie de l'admin (slug) → rayon de la boutique. */
-const CATEGORY_TAG: Record<string, Tag> = { running: 'running', training: 'training', football: 'football', yoga: 'yoga', accessoires: 'accessoires' };
+const CATEGORY_TAG: Record<string, Tag> = { vestes: 'vestes', hauts: 'hauts', pantalons: 'pantalons', robes: 'robes', accessoires: 'accessoires' };
 const NEW_DAYS = 60;
-const HOUSE = 'PESTAVE';
+const HOUSE = 'VASYCIAO';
 const euros = (c: number) => c / 100;
 const swatch = ({ label, colorHex }: ApiSwatch): Swatch => ({ label, colorHex });
 

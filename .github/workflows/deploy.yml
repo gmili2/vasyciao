@@ -77,8 +77,8 @@ jobs:
       SSH_HOST: ${{ secrets.SSH_HOST }}
       SSH_USER: ${{ secrets.SSH_USER }}
       SSH_PORT: ${{ vars.SSH_PORT || '21098' }}
-      SITE_DIR: ${{ vars.SITE_DIR || 'pestave.mygympro.club' }}
-      APP_DIR: ${{ vars.APP_DIR || 'pestave-api' }}
+      SITE_DIR: ${{ vars.SITE_DIR || 'vasyciao.mygympro.club' }}
+      APP_DIR: ${{ vars.APP_DIR || 'vasyciao-api' }}
       NODE_MAJOR: ${{ vars.NODE_MAJOR || '22' }}
       SITE_URL: ${{ vars.SITE_URL }}
       BOOTSTRAP_ARGS: ${{ (inputs.with_catalog || vars.BOOTSTRAP_WITH_CATALOG == 'true') && '--with-catalog' || '' }}

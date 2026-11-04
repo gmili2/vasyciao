@@ -1,4 +1,4 @@
-# PESTAVE — site (Vite) sur hébergement cPanel Namecheap.
+# VASYCIAO — site (Vite) sur hébergement cPanel Namecheap.
 # Copié tel quel dans dist/ à la construction, puis déployé dans le dossier du domaine.
 DirectoryIndex index.html
 Options -Indexes

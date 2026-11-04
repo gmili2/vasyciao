@@ -86,7 +86,7 @@ export class UploadsService {
     if (u.protocol !== 'https:') throw new Error('seules les adresses https sont acceptées');
     const { address } = await lookup(u.hostname);
     if (isPrivateAddress(address)) throw new Error('adresse interne refusée');
-    const res = await fetch(u, { redirect: 'error', signal: AbortSignal.timeout(20_000), headers: { 'User-Agent': 'PESTAVE-import/1.0' } });
+    const res = await fetch(u, { redirect: 'error', signal: AbortSignal.timeout(20_000), headers: { 'User-Agent': 'VASYCIAO-import/1.0' } });
     if (!res.ok || !res.body) throw new Error(`réponse ${res.status}`);
     const chunks: Buffer[] = [];
     let size = 0;

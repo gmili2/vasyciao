@@ -4,13 +4,13 @@ services:
     image: mariadb:11.4
     restart: unless-stopped
     environment:
-      MARIADB_DATABASE: pestave
-      MARIADB_USER: pestave
-      MARIADB_PASSWORD: pestave
-      MARIADB_ROOT_PASSWORD: pestave-root
+      MARIADB_DATABASE: vasyciao
+      MARIADB_USER: vasyciao
+      MARIADB_PASSWORD: vasyciao
+      MARIADB_ROOT_PASSWORD: vasyciao-root
     command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
     ports:
-      - "3309:3306"
+      - "3310:3306"
     volumes:
       - mariadb:/var/lib/mysql
 volumes:

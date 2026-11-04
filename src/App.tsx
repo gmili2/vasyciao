@@ -29,13 +29,13 @@ const TITLES: Record<string, string> = {
 /** Pages de la boutique : mêmes titres que l'API (backend/src/catalog/seo.controller.ts). */
 const SHOP_TITLES: Record<string, string> = {
   '/produits': 'Toute la boutique',
-  '/produits/homme': 'Vêtements de sport homme',
-  '/produits/femme': 'Vêtements de sport femme',
-  '/produits/running': 'Running',
-  '/produits/training': 'Training',
-  '/produits/football': 'Football',
-  '/produits/yoga': 'Yoga',
-  '/produits/accessoires': 'Accessoires de sport',
+  '/produits/homme': 'Vêtements homme',
+  '/produits/femme': 'Vêtements femme',
+  '/produits/vestes': 'Vestes',
+  '/produits/hauts': 'Hauts',
+  '/produits/pantalons': 'Pantalons',
+  '/produits/robes': 'Robes',
+  '/produits/accessoires': 'Accessoires',
   '/produits/nouveautes': 'Nouveautés',
   '/produits/promos': 'Promos',
 };
@@ -54,13 +54,13 @@ export default function App() {
     closeAll();
     // Fiche produit : balises posées par la page elle-même (nom, prix, description).
     if (pathname.startsWith('/produit/')) return;
-    if (pathname.startsWith(PATHS.admin)) { setMeta({ title: 'Administration — PESTAVE', path: pathname, noindex: true }); return; }
+    if (pathname.startsWith(PATHS.admin)) { setMeta({ title: 'Administration — VASYCIAO', path: pathname, noindex: true }); return; }
     if (pathname === '/') { setMeta({ title: HOME_TITLE, path: '/' }); return; }
     const shop = SHOP_TITLES[pathname];
     const t = shop ?? TITLES[pathname] ?? 'Boutique';
     setMeta({
-      title: `${t} — PESTAVE`,
-      description: shop ? `${shop} au Maroc, boutique PESTAVE. ${SHOP_PITCH}` : undefined,
+      title: `${t} — VASYCIAO`,
+      description: shop ? `${shop} au Maroc, boutique VASYCIAO. ${SHOP_PITCH}` : undefined,
       path: pathname,
       noindex: PRIVATE.includes(pathname) || (!shop && !TITLES[pathname]),
     });
@@ -77,7 +77,7 @@ export default function App() {
 
   if (pathname.startsWith(PATHS.admin)) return <Admin />;
   // Boutique en accès privé : rien n'est affiché avant la saisie du code.
-  if (!site) return <div style={{ minHeight: '100vh', background: '#F2F1EC' }} />;
+  if (!site) return <div style={{ minHeight: '100vh', background: '#0B0B0B' }} />;
   if (site.private && !site.unlocked) return <div className="store"><AccessGate onUnlock={unlocked} /></div>;
 
   const isHome = pathname === '/';

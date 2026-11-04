@@ -1,5 +1,5 @@
 /**
- * Catalogue de départ (vêtements de sport, catégories, marque, livraison), partagé par :
+ * Catalogue de départ (vêtements, catégories, marque, livraison), partagé par :
  * - prisma/seed.ts (données de démonstration complètes, base vidée au préalable) ;
  * - src/cli/bootstrap.ts (premier démarrage en production, sans rien écraser).
  */
@@ -24,11 +24,11 @@ export const VARIANTS: Record<string, {
 
 /* Rayons de la boutique (photos ajoutables depuis Admin → Catégories). */
 export const CATEGORIES: [slug: string, name: string, description: string, imageUrl: string | null][] = [
-  ['running', 'Running', 'Shorts, brassières, coupe-vent et chaussettes pour avaler les kilomètres.', null],
-  ['training', 'Training', 'T-shirts techniques et leggings pour la salle et le cross-training.', null],
-  ['football', 'Football', 'Maillots et shorts pour le terrain.', null],
-  ['yoga', 'Yoga', 'Tops sans couture et pantalons fluides.', null],
-  ['accessoires', 'Accessoires', 'Sacs, gourdes et chaussettes.', null],
+  ['vestes', 'Vestes', 'Tailleurs, vestes chemises et vestes militaires.', null],
+  ['hauts', 'Hauts', 'T-shirts, chemises, blouses, pulls et hoodies.', null],
+  ['pantalons', 'Pantalons', 'Pantalons larges à pinces et pantalons tailleur.', null],
+  ['robes', 'Robes', 'Robes longues et fluides.', null],
+  ['accessoires', 'Accessoires', 'Sacs et accessoires Vasyciao.', null],
 ];
 
 
@@ -37,9 +37,9 @@ export type CatalogProduct = { id: string; name: string; sku: string; unit: numb
 /** Marque maison, catégories et livraison : créées seulement si elles n'existent pas. */
 export async function installReferenceData(prisma: PrismaClient) {
   const brands: Record<string, string> = {};
-  const house = await prisma.brand.findUnique({ where: { slug: 'pestave' } })
-    ?? await prisma.brand.create({ data: { name: 'PESTAVE', slug: 'pestave', description: 'Vêtements de sport au Maroc.' } });
-  brands.PESTAVE = house.id;
+  const house = await prisma.brand.findUnique({ where: { slug: 'vasyciao' } })
+    ?? await prisma.brand.create({ data: { name: 'VASYCIAO', slug: 'vasyciao', description: 'Vêtements femme et homme au Maroc.' } });
+  brands.VASYCIAO = house.id;
 
   const cats: Record<string, string> = {};
   for (const [i, [slug, name, description, imageUrl]] of CATEGORIES.entries()) {

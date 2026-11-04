@@ -1,4 +1,4 @@
-export type CategoryId = 'all' | 'homme' | 'femme' | 'running' | 'training' | 'football' | 'yoga' | 'accessoires' | 'new' | 'promo';
+export type CategoryId = 'all' | 'homme' | 'femme' | 'vestes' | 'hauts' | 'pantalons' | 'robes' | 'accessoires' | 'new' | 'promo';
 
 export interface Swatch {
   label: string;
@@ -21,7 +21,7 @@ export interface Product {
   id: string; // slug, utilisé dans les URL
   sku: string;
   name: string;
-  brand?: string; // grande maison (absent pour les articles PESTAVE)
+  brand?: string; // grande maison (absent pour les articles VASYCIAO)
   col: string;
   kind: string;
   cats: Exclude<CategoryId, 'all'>[];
@@ -50,31 +50,31 @@ export interface Product {
 }
 
 export const CATS: Record<CategoryId, [string, string]> = {
-  all: ['Toute la boutique', 'Running, training, football, yoga : des vêtements de sport pensés pour l\u2019effort.'],
-  homme: ['Homme', 'T-shirts techniques, shorts, maillots et vestes pour homme.'],
-  femme: ['Femme', 'Leggings, brassières, tops et pantalons pour femme.'],
-  running: ['Running', 'Shorts, brassières, coupe-vent et chaussettes pour avaler les kilomètres.'],
-  training: ['Training', 'T-shirts techniques et leggings pour la salle et le cross-training.'],
-  football: ['Football', 'Maillots et shorts pour le terrain.'],
-  yoga: ['Yoga', 'Tops sans couture et pantalons fluides.'],
-  accessoires: ['Accessoires', 'Sacs, gourdes et chaussettes.'],
-  new: ['Nouveautés', 'Les derniers drops arrivés en boutique.'],
+  all: ['Shop', 'Du noir, du blanc, et des coupes qui tiennent. Pour femme et homme.'],
+  homme: ['Homme', 'Vestes, chemises, pulls et pantalons pour homme.'],
+  femme: ['Femme', 'Tailleurs, vestes, blouses, robes et pantalons pour femme.'],
+  vestes: ['Vestes', 'Tailleurs, vestes chemises et vestes militaires.'],
+  hauts: ['Hauts', 'T-shirts, chemises, blouses, pulls et hoodies.'],
+  pantalons: ['Pantalons', 'Pantalons larges à pinces et pantalons tailleur.'],
+  robes: ['Robes', 'Robes longues et fluides.'],
+  accessoires: ['Accessoires', 'Sacs et accessoires Vasyciao.'],
+  new: ['Nouveautés', 'Les dernières pièces arrivées en boutique.'],
   promo: ['Promos', 'Les meilleures affaires du moment.'],
 };
 
-/** Cartes « Choisis ton sport » de l'accueil et page Collections. */
+/** Rayons de la page Collections. */
 export const COLLECTIONS: { id: CategoryId; label: string; sub: string; img: string }[] = [
-  { id: 'running', label: 'Running', sub: 'Shorts, brassières, coupe-vent', img: 'running' },
-  { id: 'training', label: 'Training', sub: 'T-shirts techniques & leggings', img: 'training' },
-  { id: 'football', label: 'Football', sub: 'Maillots & shorts', img: 'football' },
-  { id: 'yoga', label: 'Yoga', sub: 'Tops sans couture & pantalons', img: 'yoga' },
+  { id: 'vestes', label: 'Vestes', sub: 'Tailleurs, vestes chemises, militaires', img: 'vestes' },
+  { id: 'hauts', label: 'Hauts', sub: 'T-shirts, chemises, pulls', img: 'hauts' },
+  { id: 'pantalons', label: 'Pantalons', sub: 'Larges, à pinces, tailleur', img: 'pantalons' },
+  { id: 'robes', label: 'Robes', sub: 'Longues et fluides', img: 'robes' },
 ];
 
 export const FAQ: [string, string][] = [
   ['Quels sont les délais de livraison ?', 'Expédition sous 24 h ouvrées, livraison en 2 à 4 jours partout au Maroc.'],
-  ['Comment choisir ma taille ?', 'Nos t-shirts et shorts ont une coupe standard, nos leggings et brassières sont ajustés. En cas de doute entre deux tailles, prenez la plus grande pour plus d\u2019aisance.'],
+  ['Comment choisir ma taille ?', 'Nos vestes, pulls et t-shirts ont une coupe ample : prenez votre taille habituelle pour l\u2019effet oversize, une taille en dessous pour un tombé plus ajusté. Les pantalons tailleur taillent normalement.'],
   ['Puis-je échanger une taille ?', 'Oui, sous 7 jours après réception, si l\u2019article n\u2019a pas été porté et garde ses étiquettes.'],
-  ['Faites-vous des tenues d\u2019équipe ?', 'Oui : maillots de football avec nom et numéro, et commandes pour clubs, salles et écoles. Contactez-nous pour un devis.'],
+  ['Comment entretenir mes pièces ?', 'Chaque fiche produit indique la matière et l\u2019entretien conseillé. Lavez le noir sur l\u2019envers, à 30 °C, pour qu\u2019il garde sa profondeur.'],
   ['Quels moyens de paiement acceptez-vous ?', 'Le paiement à la livraison, en espèces à la réception du colis, ou le virement bancaire : la commande est alors expédiée dès réception du virement.'],
 ];
 
@@ -83,7 +83,7 @@ export const LEGAL: Record<'cgv' | 'privacy', { title: string; updated: string; 
     title: 'Conditions générales de vente',
     updated: 'Mise à jour : octobre 2026',
     sections: [
-      ['Objet', 'Les présentes conditions régissent les ventes de vêtements et accessoires de sport réalisées sur le site PESTAVE auprès de clients particuliers.'],
+      ['Objet', 'Les présentes conditions régissent les ventes de vêtements et accessoires réalisées sur le site VASYCIAO auprès de clients particuliers.'],
       ['Prix', 'Les prix sont indiqués en dirhams marocains (DH), toutes taxes et livraison comprises, partout au Maroc.'],
       ['Commande', 'La commande est enregistrée dès sa validation sur le site ; nous vous contactons par téléphone pour la confirmer. Elle récapitule les articles, le prix et l\u2019adresse de livraison.'],
       ['Paiement', 'Le paiement s\u2019effectue à la livraison, en espèces, ou par virement bancaire avant expédition. En cas de virement, la commande est expédiée dès réception des fonds.'],
@@ -101,7 +101,7 @@ export const LEGAL: Record<'cgv' | 'privacy', { title: string; updated: string; 
       ['Conservation', 'Les données sont conservées pendant la durée de la relation commerciale, puis archivées selon les obligations légales.'],
       ['Vos droits', 'Vous disposez d\u2019un droit d\u2019accès, de rectification, d\u2019effacement et d\u2019opposition, exerçable à tout moment auprès de notre service client.'],
       ['Cookies', 'Des cookies techniques assurent le fonctionnement du site ; les cookies de mesure d\u2019audience ne sont déposés qu\u2019avec votre consentement.'],
-      ['Contact', 'Pour toute question relative à vos données : contact@pestave.ma.'],
+      ['Contact', 'Pour toute question relative à vos données : contact@vasyciao.ma.'],
     ],
   },
 };
@@ -117,7 +117,7 @@ export const PILLARS = [
 export const fmt = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' DH';
 export const stars = (r: number) => '★'.repeat(Math.round(r)) + '☆'.repeat(5 - Math.round(r));
 export const ratingF = (r: number) => r.toFixed(1).replace('.', ',');
-export const refOf = (p: Product) => 'PS-' + p.id.slice(0, 6).toUpperCase();
+export const refOf = (p: Product) => 'VC-' + p.id.slice(0, 6).toUpperCase();
 export const isNew = (p: Product) => p.cats.includes('new');
 export const badgeOf = (p: Product) =>
   p.old ? '−' + Math.round((1 - p.price / p.old) * 100) + ' %' : isNew(p) ? 'Nouveau' : '';

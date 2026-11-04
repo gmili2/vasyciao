@@ -1,4 +1,4 @@
-/* PESTAVE — tokens de base (administration). La boutique (.store) reprend la charte Pestave plus bas. */
+/* VASYCIAO — tokens de base (administration). La boutique (.store) reprend la charte Vasyciao plus bas. */
 :root {
   --ink: #111111;
   --ivory: #f7f7f5;
@@ -11,11 +11,11 @@
   --body: #3a3a36;
   --faint: #9a9a94;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --mono: 'Inter', system-ui, sans-serif;
-  --sans: 'Inter', system-ui, sans-serif;
-  --display-font: 'Barlow Condensed', 'Inter', sans-serif;
-  --accent: #C8F03C;
-  --accent-hover: #B4DC28;
+  --mono: 'Space Mono', ui-monospace, monospace;
+  --sans: 'Space Grotesk', system-ui, sans-serif;
+  --display-font: 'Anton', 'Space Grotesk', sans-serif;
+  --accent: #F5F5F3;
+  --accent-hover: #C9C9C6;
   --paper: #ffffff;
 }
 
@@ -214,81 +214,89 @@ input::placeholder, textarea::placeholder { color: var(--faint); }
 .hscroll { overflow-x: auto; scrollbar-width: none; }
 .hscroll::-webkit-scrollbar { display: none; }
 
-/* ——— Boutique PESTAVE : fond « Craie », sections « Noir piste », accent « Volt » ———
-   --hl : couleur des textes mis en avant (noir sur fond clair, Volt sur fond sombre). */
-.store {
-  --ink: #0D0E11;
-  --ivory: #F2F1EC;
-  --white: #FFFFFF;
-  --paper: #FFFFFF;
-  --stone: #DCDBD5;
-  --line: #E1E0DA;
-  --line-strong: #CFCEC7;
-  --graphite: #4A4D55;
-  --muted: #4A4D55;
-  --body: #2A2C33;
-  --faint: #8A8D95;
-  --hl: #0D0E11;
-  --card: #FFFFFF;
-  --hover: #E7E6E0;
-}
-.store .dark, .store.dark {
-  --ink: #F2F1EC;
-  --ivory: #0D0E11;
-  --white: #1C1E24;
-  --paper: #1C1E24;
-  --stone: #1C1E24;
-  --line: #2A2C33;
-  --line-strong: #4A4D55;
-  --graphite: #A9ACB3;
-  --muted: #C9CBD0;
-  --body: #C9CBD0;
-  --faint: #8A8D95;
-  --hl: var(--accent);
-  --card: #1C1E24;
-  --hover: #2A2C33;
+/* ——— Boutique VASYCIAO : noir #0B0B0B, blanc cassé #F5F5F3, filets #2A2A2A, angles droits ———
+   Titres Anton, texte Space Grotesk, libellés Space Mono. .light : sections claires (newsletter).
+   --hl : couleur des textes mis en avant. */
+.store, .store .dark, .store.dark {
+  --ink: #F5F5F3;
+  --ivory: #0B0B0B;
+  --white: #141414;
+  --paper: #141414;
+  --stone: #1A1A1A;
+  --line: #2A2A2A;
+  --line-strong: #3A3A3A;
+  --graphite: #8C8C8C;
+  --muted: #C9C9C6;
+  --body: #C9C9C6;
+  --faint: #6E6E6B;
+  --hl: #F5F5F3;
+  --card: #141414;
+  --hover: #1F1F1F;
   background: var(--ivory);
   color: var(--ink);
   color-scheme: dark;
 }
+.store .light, .store.light {
+  --ink: #0B0B0B;
+  --ivory: #F5F5F3;
+  --white: #FFFFFF;
+  --paper: #FFFFFF;
+  --stone: #E9E9E6;
+  --line: #D6D5D1;
+  --line-strong: #0B0B0B;
+  --graphite: #5A5A58;
+  --muted: #3A3A38;
+  --body: #3A3A38;
+  --faint: #8C8C8C;
+  --hl: #0B0B0B;
+  --card: #FFFFFF;
+  --hover: #E9E9E6;
+  background: var(--ivory);
+  color: var(--ink);
+  color-scheme: light;
+}
 .store a { color: inherit; }
 .store a:hover { color: var(--graphite); }
-.store .dark a:hover, .store.dark a:hover { color: var(--accent); }
-.store ::selection { background: var(--accent); color: #0D0E11; }
+.store ::selection { background: #F5F5F3; color: #0B0B0B; }
 .store :focus-visible { outline-color: var(--ink); }
-.store .mono { font-weight: 600; letter-spacing: .2em; }
-.store .eyebrow { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 3px; color: var(--hl); text-transform: uppercase; }
+.store .mono { font-family: var(--mono); font-size: 12px; letter-spacing: .04em; color: var(--graphite); }
+.store .eyebrow { margin: 0; font-family: var(--mono); font-size: 13px; letter-spacing: .04em; color: var(--hl); text-transform: uppercase; }
 .store .display {
   font-family: var(--display-font);
   font-stretch: normal;
-  font-style: italic;
-  font-weight: 900;
-  letter-spacing: -0.5px;
+  font-weight: 400;
+  letter-spacing: 0;
   line-height: .92;
+  text-transform: uppercase;
 }
-.store .btn { font-size: 15px; letter-spacing: 0; text-transform: none; font-weight: 600; }
-.store .btn-primary { background: var(--accent); border-color: var(--accent); color: #0D0E11; }
-.store .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #0D0E11; }
-.store .btn-outline { border: 1px solid var(--ink); color: var(--ink); }
+.store .btn {
+  border-radius: 0; height: 52px; padding: 0 22px; gap: 10px;
+  font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+}
+.store .btn-primary { background: var(--ink); border-color: var(--ink); color: var(--ivory); }
+.store .btn-primary:hover { background: var(--muted); border-color: var(--muted); color: var(--ivory); transform: none; }
+.store .btn-outline { background: transparent; border: 1px solid var(--ink); color: var(--ink); }
 .store .btn-outline:hover { background: var(--ink); border-color: var(--ink); color: var(--ivory); }
-.store .btn-light { background: #F2F1EC; color: #0D0E11; border-color: #F2F1EC; }
-.store .btn-ghost-light { border: 1px solid #F2F1EC; color: #F2F1EC; }
-.store .btn-ghost-light:hover { background: #F2F1EC; color: #0D0E11; }
-.store .btn-dark { background: #0D0E11; color: #F2F1EC; border-color: #0D0E11; }
-.store .btn-dark:hover { background: #2A2C33; border-color: #2A2C33; color: #F2F1EC; }
-.store .link-underline { border-bottom-color: var(--ink); color: var(--ink); }
-.store .icon-btn { color: var(--ink); }
+.store .btn-light { background: #F5F5F3; color: #0B0B0B; border-color: #F5F5F3; }
+.store .btn-ghost-light { border: 1px solid #F5F5F3; color: #F5F5F3; background: transparent; }
+.store .btn-ghost-light:hover { background: #F5F5F3; color: #0B0B0B; }
+.store .btn-dark { background: transparent; color: var(--ink); border-color: var(--line-strong); justify-content: flex-start; font-weight: 400; font-size: 12px; }
+.store .btn-dark:hover { background: var(--ink); border-color: var(--ink); color: var(--ivory); }
+.store .link-underline { border-bottom-color: var(--ink); color: var(--ink); font-family: var(--mono); letter-spacing: .04em; }
+.store .icon-btn { color: var(--ink); border-radius: 0; }
 .store .icon-btn:hover { background: var(--hover); }
-.store .chip { border-color: var(--line-strong); font-weight: 500; }
-.store .chip:hover { border-color: var(--ink); }
-.store .chip.active { background: #0D0E11; color: #F2F1EC; border-color: #0D0E11; }
-.store .badge-count { background: var(--accent); color: #0D0E11; font-weight: 700; }
-.store .ph { background: var(--stone); background-image: repeating-linear-gradient(135deg, rgba(13,14,17,.04) 0 1px, transparent 1px 12px); }
-.store .dark .ph { background-image: repeating-linear-gradient(135deg, rgba(242,241,236,.04) 0 1px, transparent 1px 12px); }
-.store .ph-caption { color: var(--faint); }
-.store .field input, .store .field textarea, .store .field select { background: var(--paper); border-color: var(--line-strong); color: var(--ink); border-radius: 12px; }
+.store .chip { border-radius: 0; height: 44px; border-color: var(--ink); font-family: var(--mono); font-size: 13px; text-transform: uppercase; }
+.store .chip:hover { background: var(--hover); }
+.store .chip.active { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+.store .badge-count { background: #F5F5F3; color: #0B0B0B; font-weight: 700; border-radius: 0; font-family: var(--mono); }
+.store .ph { background: var(--stone); background-image: none; }
+.store .ph-caption { color: var(--faint); font-family: var(--mono); }
+.store .field { font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--graphite); }
+.store .field input, .store .field textarea, .store .field select { background: transparent; border-color: var(--line-strong); color: var(--ink); border-radius: 0; font-family: var(--sans); text-transform: none; letter-spacing: 0; }
 .store .field input:focus, .store .field textarea:focus, .store .field select:focus { border-color: var(--ink); }
-.store .tilt-glare { background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(200,240,60,.25), rgba(200,240,60,0) 55%); }
-.store .card-frame { border-radius: 16px; background: var(--card); }
-.store .nav-link { color: var(--ink); font-size: 15px; font-weight: 500; padding: 12px 0; }
-.store .nav-link.on, .store .nav-link:hover { color: var(--hl); }
+.store .tilt-glare { display: none; }
+.store .tilt { transform: none; }
+.store .card-frame { border-radius: 0; background: var(--card); }
+.store .nav-link { font-family: var(--mono); font-size: 13px; color: var(--ink); padding: 14px 14px; text-transform: uppercase; }
+.store .nav-link.on, .store .nav-link:hover { color: var(--graphite); }
+.store input, .store select, .store textarea, .store button { border-radius: 0; }

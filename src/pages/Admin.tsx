@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { Logo } from '../components/Shell';
 import { api, apiAll, ApiError, login, logout, refreshSession, setLogoutHandler, type ApiUser } from '../api';
 import { pageList } from '../components/Pagination';
 import { useLayout } from '../layout';
@@ -502,7 +503,7 @@ type ImportResult = {
 };
 const IMPORT_TEMPLATE = [
   'nom;prix;prix_barre;stock;sku;categorie;marque;mouvement;couleurs;diametre;etancheite;bracelet;genre;statut;description;images',
-  'Maillot exemple;249;299;5;EX-001;Maillots;INCOMART;Quartz;Orange|Noir;0;0;Ample;Homme;Brouillon;Maillot en mesh respirant.;https://exemple.com/photo1.jpg | https://exemple.com/photo2.jpg',
+  'T-shirt exemple;199;249;5;EX-001;Training;PESTAVE;Quartz;Noir|Volt;0;0;Ajustée;Homme;Brouillon;T-shirt technique respirant.;https://exemple.com/photo1.jpg | https://exemple.com/photo2.jpg',
 ].join('\r\n');
 function downloadTemplate() {
   // BOM : Excel lit alors correctement les accents.
@@ -525,7 +526,7 @@ function confirmMessage(o: AOrder) {
   const lines = o.lines.map((l) => `• ${l.qty} × ${l.name}${l.variant ? ` (${l.variant})` : ''}`).join('\n');
   return [
     `Bonjour ${first} 👋`,
-    `Merci pour votre commande ${o.number} sur INCOMART 🏀`,
+    `Merci pour votre commande ${o.number} sur PESTAVE 🏃`,
     '',
     lines,
     `Total : ${fmt(o.total)} — paiement à la livraison 💵`,
@@ -577,7 +578,7 @@ export default function Admin() {
   const [user, setUser] = useState<ApiUser | null | undefined>(undefined);
 
   useEffect(() => {
-    document.title = 'Administration — INCOMART';
+    document.title = 'Administration — PESTAVE';
     refreshSession().then((u) => setUser(u?.role === 'ADMIN' ? u : null));
     setLogoutHandler(() => setUser(null));
     return () => setLogoutHandler(null);
@@ -612,9 +613,9 @@ function AdminLogin({ onLogin }: { onLogin: (u: ApiUser) => void }) {
       <style>{'.adm-input:focus{border-color:#111!important}'}</style>
       <form onSubmit={submit} style={{ ...card, width: 'min(420px,100%)', padding: 'clamp(24px,5vw,40px)', display: 'flex', flexDirection: 'column', gap: 18 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 12, color: '#111', marginBottom: 6 }}>
-          <img src="/logo.png" alt="" style={{ width: 44, height: 44, objectFit: 'contain' }} />
+          <Logo size={40} light mono="#111" />
           <span style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <span style={{ fontStretch: '125%', fontWeight: 600, fontSize: 14, letterSpacing: '.04em' }}>INCOMART</span>
+            <span style={{ fontStretch: '125%', fontWeight: 600, fontSize: 14, letterSpacing: '.04em' }}>PESTAVE</span>
             <span style={{ ...monoLabel, fontSize: 9.5 }}>Administration</span>
           </span>
         </Link>
@@ -1029,10 +1030,10 @@ function AdminPanel({ user, onLogout }: { user: ApiUser; onLogout: () => void })
       {/* ---------- barre latérale ---------- */}
       <aside style={{ background: '#111', color: '#fff', display: 'flex', flexDirection: m ? 'row' : 'column', gap: m ? 16 : 36, padding: m ? '10px 16px' : '28px 18px', position: 'sticky', top: 0, height: m ? 'auto' : '100vh', zIndex: 30, overflowX: 'auto' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 'none', color: '#fff' }}>
-          <img src="/logo.png" alt="INCOMART" style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: '50%' }} />
+          <Logo size={40} />
           {!m && (
             <span style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <span style={{ fontStretch: '125%', fontWeight: 600, fontSize: 14, letterSpacing: '.04em' }}>INCOMART</span>
+              <span style={{ fontStretch: '125%', fontWeight: 600, fontSize: 14, letterSpacing: '.04em' }}>PESTAVE</span>
               <span style={{ fontFamily: 'var(--mono)', fontSize: 9.5, letterSpacing: '.16em', textTransform: 'uppercase', color: '#8C8C86' }}>Administration</span>
             </span>
           )}

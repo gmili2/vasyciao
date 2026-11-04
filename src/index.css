@@ -1,4 +1,4 @@
-/* INCOMART — tokens de base (administration, thème clair). La boutique (.store) passe en thème sombre plus bas. */
+/* PESTAVE — tokens de base (administration). La boutique (.store) reprend la charte Pestave plus bas. */
 :root {
   --ink: #111111;
   --ivory: #f7f7f5;
@@ -14,8 +14,8 @@
   --mono: 'Inter', system-ui, sans-serif;
   --sans: 'Inter', system-ui, sans-serif;
   --display-font: 'Barlow Condensed', 'Inter', sans-serif;
-  --accent: #FF6B1A;
-  --accent-hover: #FF8A45;
+  --accent: #C8F03C;
+  --accent-hover: #B4DC28;
   --paper: #ffffff;
 }
 
@@ -214,55 +214,81 @@ input::placeholder, textarea::placeholder { color: var(--faint); }
 .hscroll { overflow-x: auto; scrollbar-width: none; }
 .hscroll::-webkit-scrollbar { display: none; }
 
-/* ——— Boutique INCOMART : thème sombre « parquet », accent orange ballon ——— */
+/* ——— Boutique PESTAVE : fond « Craie », sections « Noir piste », accent « Volt » ———
+   --hl : couleur des textes mis en avant (noir sur fond clair, Volt sur fond sombre). */
 .store {
-  --ink: #F5F5F5;
-  --ivory: #0A0A0A;
-  --white: #161616;
-  --paper: #161616;
-  --stone: #161616;
-  --line: #262626;
-  --line-strong: #3A3A3A;
-  --graphite: #A3A3A3;
-  --muted: #B5B5B5;
-  --body: #B5B5B5;
-  --faint: #6B6B6B;
+  --ink: #0D0E11;
+  --ivory: #F2F1EC;
+  --white: #FFFFFF;
+  --paper: #FFFFFF;
+  --stone: #DCDBD5;
+  --line: #E1E0DA;
+  --line-strong: #CFCEC7;
+  --graphite: #4A4D55;
+  --muted: #4A4D55;
+  --body: #2A2C33;
+  --faint: #8A8D95;
+  --hl: #0D0E11;
+  --card: #FFFFFF;
+  --hover: #E7E6E0;
+}
+.store .dark, .store.dark {
+  --ink: #F2F1EC;
+  --ivory: #0D0E11;
+  --white: #1C1E24;
+  --paper: #1C1E24;
+  --stone: #1C1E24;
+  --line: #2A2C33;
+  --line-strong: #4A4D55;
+  --graphite: #A9ACB3;
+  --muted: #C9CBD0;
+  --body: #C9CBD0;
+  --faint: #8A8D95;
+  --hl: var(--accent);
+  --card: #1C1E24;
+  --hover: #2A2C33;
+  background: var(--ivory);
+  color: var(--ink);
   color-scheme: dark;
 }
 .store a { color: inherit; }
-.store a:hover { color: var(--accent-hover); }
-.store ::selection { background: var(--accent); color: #0A0A0A; }
-.store :focus-visible { outline-color: var(--accent); }
-.store .mono { font-weight: 700; letter-spacing: .2em; }
-.store .eyebrow { margin: 0; font-size: 14px; font-weight: 700; letter-spacing: .24em; color: var(--accent); text-transform: uppercase; }
+.store a:hover { color: var(--graphite); }
+.store .dark a:hover, .store.dark a:hover { color: var(--accent); }
+.store ::selection { background: var(--accent); color: #0D0E11; }
+.store :focus-visible { outline-color: var(--ink); }
+.store .mono { font-weight: 600; letter-spacing: .2em; }
+.store .eyebrow { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 3px; color: var(--hl); text-transform: uppercase; }
 .store .display {
   font-family: var(--display-font);
   font-stretch: normal;
-  font-weight: 800;
-  letter-spacing: 0;
-  line-height: .95;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  line-height: .92;
 }
-.store .btn { font-size: 15px; letter-spacing: 0; text-transform: none; font-weight: 700; }
-.store .btn-primary { background: var(--accent); border-color: var(--accent); color: #0A0A0A; }
-.store .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #0A0A0A; }
-.store .btn-outline { border: 2px solid var(--line-strong); color: var(--ink); }
-.store .btn-outline:hover { background: transparent; border-color: var(--ink); color: var(--ink); }
-.store .btn-light { background: #F5F5F5; color: #0A0A0A; border-color: #F5F5F5; }
-.store .btn-ghost-light { border: 2px solid #F5F5F5; color: #F5F5F5; }
-.store .btn-dark { background: #0A0A0A; color: #F5F5F5; border-color: #0A0A0A; }
-.store .btn-dark:hover { background: #1F1F1F; color: #F5F5F5; }
-.store .link-underline { border-bottom-color: var(--accent); color: var(--accent); }
+.store .btn { font-size: 15px; letter-spacing: 0; text-transform: none; font-weight: 600; }
+.store .btn-primary { background: var(--accent); border-color: var(--accent); color: #0D0E11; }
+.store .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #0D0E11; }
+.store .btn-outline { border: 1px solid var(--ink); color: var(--ink); }
+.store .btn-outline:hover { background: var(--ink); border-color: var(--ink); color: var(--ivory); }
+.store .btn-light { background: #F2F1EC; color: #0D0E11; border-color: #F2F1EC; }
+.store .btn-ghost-light { border: 1px solid #F2F1EC; color: #F2F1EC; }
+.store .btn-ghost-light:hover { background: #F2F1EC; color: #0D0E11; }
+.store .btn-dark { background: #0D0E11; color: #F2F1EC; border-color: #0D0E11; }
+.store .btn-dark:hover { background: #2A2C33; border-color: #2A2C33; color: #F2F1EC; }
+.store .link-underline { border-bottom-color: var(--ink); color: var(--ink); }
 .store .icon-btn { color: var(--ink); }
-.store .icon-btn:hover { background: #1F1F1F; }
-.store .chip { border-color: var(--line-strong); }
+.store .icon-btn:hover { background: var(--hover); }
+.store .chip { border-color: var(--line-strong); font-weight: 500; }
 .store .chip:hover { border-color: var(--ink); }
-.store .chip.active { background: var(--accent); color: #0A0A0A; border-color: var(--accent); }
-.store .badge-count { background: var(--accent); color: #0A0A0A; font-weight: 700; }
-.store .ph { background: #161616; background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 1px, transparent 1px 12px); }
-.store .ph-caption { color: #8A8A8A; }
-.store .field input, .store .field textarea, .store .field select { background: #161616; border-color: var(--line-strong); color: var(--ink); border-radius: 12px; }
-.store .field input:focus, .store .field textarea:focus, .store .field select:focus { border-color: var(--accent); }
-.store .tilt-glare { background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255,107,26,.22), rgba(255,107,26,0) 55%); }
-.store .card-frame { border-radius: 16px; border: 1px solid var(--line); }
-.store .nav-link { color: var(--ink); font-size: 15px; font-weight: 600; padding: 12px 14px; }
-.store .nav-link.on, .store .nav-link:hover { color: var(--accent); }
+.store .chip.active { background: #0D0E11; color: #F2F1EC; border-color: #0D0E11; }
+.store .badge-count { background: var(--accent); color: #0D0E11; font-weight: 700; }
+.store .ph { background: var(--stone); background-image: repeating-linear-gradient(135deg, rgba(13,14,17,.04) 0 1px, transparent 1px 12px); }
+.store .dark .ph { background-image: repeating-linear-gradient(135deg, rgba(242,241,236,.04) 0 1px, transparent 1px 12px); }
+.store .ph-caption { color: var(--faint); }
+.store .field input, .store .field textarea, .store .field select { background: var(--paper); border-color: var(--line-strong); color: var(--ink); border-radius: 12px; }
+.store .field input:focus, .store .field textarea:focus, .store .field select:focus { border-color: var(--ink); }
+.store .tilt-glare { background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(200,240,60,.25), rgba(200,240,60,0) 55%); }
+.store .card-frame { border-radius: 16px; background: var(--card); }
+.store .nav-link { color: var(--ink); font-size: 15px; font-weight: 500; padding: 12px 0; }
+.store .nav-link.on, .store .nav-link:hover { color: var(--hl); }

@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       with_catalog:
-        description: "Importer les montres de départ si le catalogue est vide"
+        description: "Importer les articles de départ si le catalogue est vide"
         type: boolean
         default: false
 
@@ -77,8 +77,8 @@ jobs:
       SSH_HOST: ${{ secrets.SSH_HOST }}
       SSH_USER: ${{ secrets.SSH_USER }}
       SSH_PORT: ${{ vars.SSH_PORT || '21098' }}
-      SITE_DIR: ${{ vars.SITE_DIR || 'incomart.store' }}
-      APP_DIR: ${{ vars.APP_DIR || 'incomart-api' }}
+      SITE_DIR: ${{ vars.SITE_DIR || 'pestave.mygympro.club' }}
+      APP_DIR: ${{ vars.APP_DIR || 'pestave-api' }}
       NODE_MAJOR: ${{ vars.NODE_MAJOR || '22' }}
       SITE_URL: ${{ vars.SITE_URL }}
       BOOTSTRAP_ARGS: ${{ (inputs.with_catalog || vars.BOOTSTRAP_WITH_CATALOG == 'true') && '--with-catalog' || '' }}

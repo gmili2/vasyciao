@@ -1,5 +1,5 @@
 /**
- * Catalogue de départ (articles de basket, catégories, marque, livraison), partagé par :
+ * Catalogue de départ (vêtements de sport, catégories, marque, livraison), partagé par :
  * - prisma/seed.ts (données de démonstration complètes, base vidée au préalable) ;
  * - src/cli/bootstrap.ts (premier démarrage en production, sans rien écraser).
  */
@@ -24,11 +24,11 @@ export const VARIANTS: Record<string, {
 
 /* Rayons de la boutique (photos ajoutables depuis Admin → Catégories). */
 export const CATEGORIES: [slug: string, name: string, description: string, imageUrl: string | null][] = [
-  ['maillots', 'Maillots', 'Débardeurs, réversibles et maillots personnalisables.', null],
-  ['shorts', 'Shorts', 'Mesh respirant, longueur genou, coupe ample.', null],
-  ['sweats', 'Sweats', 'Hoodies et warm-ups pour l’échauffement et la rue.', null],
-  ['baskets', 'Baskets', 'High-top et low-top, maintien et accroche sur le parquet.', null],
-  ['accessoires', 'Accessoires', 'Ballons, sacs, chaussettes et protections.', null],
+  ['running', 'Running', 'Shorts, brassières, coupe-vent et chaussettes pour avaler les kilomètres.', null],
+  ['training', 'Training', 'T-shirts techniques et leggings pour la salle et le cross-training.', null],
+  ['football', 'Football', 'Maillots et shorts pour le terrain.', null],
+  ['yoga', 'Yoga', 'Tops sans couture et pantalons fluides.', null],
+  ['accessoires', 'Accessoires', 'Sacs, gourdes et chaussettes.', null],
 ];
 
 
@@ -37,9 +37,9 @@ export type CatalogProduct = { id: string; name: string; sku: string; unit: numb
 /** Marque maison, catégories et livraison : créées seulement si elles n'existent pas. */
 export async function installReferenceData(prisma: PrismaClient) {
   const brands: Record<string, string> = {};
-  const house = await prisma.brand.findUnique({ where: { slug: 'incomart' } })
-    ?? await prisma.brand.create({ data: { name: 'INCOMART', slug: 'incomart', description: 'Boutique basket au Maroc.' } });
-  brands.INCOMART = house.id;
+  const house = await prisma.brand.findUnique({ where: { slug: 'pestave' } })
+    ?? await prisma.brand.create({ data: { name: 'PESTAVE', slug: 'pestave', description: 'Vêtements de sport au Maroc.' } });
+  brands.PESTAVE = house.id;
 
   const cats: Record<string, string> = {};
   for (const [i, [slug, name, description, imageUrl]] of CATEGORIES.entries()) {
@@ -83,7 +83,7 @@ export async function installCatalog(prisma: PrismaClient, actorId: string, refs
     const created = await prisma.product.create({
       data: {
         name: p.name, slug: p.slug, shortDescription: p.kind, description: p.desc, reference: a.sku, sku: a.sku,
-        priceCents, salePriceCents, stock: a.stock, status: a.status ?? 'ACTIVE', isFeatured: isNew, gender: Gender.UNISEX,
+        priceCents, salePriceCents, stock: a.stock, status: a.status ?? 'ACTIVE', isFeatured: isNew, gender: (p as { gender?: Gender }).gender ?? Gender.UNISEX,
         brandId, categoryId: cats[a.category],
         collectionId: collection.id,
         // Champs hérités du modèle « montre » : matière (caseMaterial), coupe (strapMaterial), entretien (glass).

@@ -18,19 +18,21 @@ import { VISIBLE } from './visibility';
  * complété du titre, de la description, de la photo, du prix et des données structurées de la page.
  */
 
-const SHOP = 'INCOMART';
+const SHOP = 'PESTAVE';
 const PITCH = 'Livraison partout au Maroc, paiement à la livraison.';
 
 /** Pages de la boutique (mêmes adresses que src/routes.ts du site). */
 const SHOP_PAGES: Record<string, { title: string; description: string }> = {
-  '': { title: 'Toute la boutique', description: `Boutique de basket au Maroc : maillots, shorts, sweats, baskets et accessoires. ${PITCH}` },
-  maillots: { title: 'Maillots de basket', description: `Maillots de basket au Maroc : débardeurs, réversibles et maillots personnalisés. ${PITCH}` },
-  shorts: { title: 'Shorts de basket', description: `Shorts de basket au Maroc : mesh respirant, longueur genou, style rétro. ${PITCH}` },
-  sweats: { title: 'Sweats et hoodies', description: `Hoodies et warm-ups de basket au Maroc. ${PITCH}` },
-  baskets: { title: 'Baskets de basket', description: `Baskets de basket au Maroc : high-top et low-top. ${PITCH}` },
-  accessoires: { title: 'Accessoires de basket', description: `Ballons, sacs et chaussettes de basket au Maroc. ${PITCH}` },
+  '': { title: 'Toute la boutique', description: `Vêtements de sport au Maroc : running, training, football, yoga et accessoires. ${PITCH}` },
+  homme: { title: 'Vêtements de sport homme', description: `Vêtements de sport pour homme au Maroc : t-shirts, shorts, maillots et vestes. ${PITCH}` },
+  femme: { title: 'Vêtements de sport femme', description: `Vêtements de sport pour femme au Maroc : leggings, brassières, tops et pantalons de yoga. ${PITCH}` },
+  running: { title: 'Running', description: `Tenues de running au Maroc : shorts, brassières, coupe-vent et chaussettes. ${PITCH}` },
+  training: { title: 'Training', description: `Vêtements de training et de fitness au Maroc : t-shirts techniques et leggings. ${PITCH}` },
+  football: { title: 'Football', description: `Maillots et shorts de football au Maroc. ${PITCH}` },
+  yoga: { title: 'Yoga', description: `Tenues de yoga et de pilates au Maroc : tops sans couture et pantalons fluides. ${PITCH}` },
+  accessoires: { title: 'Accessoires de sport', description: `Sacs de sport, gourdes et chaussettes au Maroc. ${PITCH}` },
   nouveautes: { title: 'Nouveautés', description: `Les derniers articles arrivés à la boutique. ${PITCH}` },
-  promos: { title: 'Promos', description: `Les promotions du moment sur nos articles de basket. ${PITCH}` },
+  promos: { title: 'Promos', description: `Les promotions du moment sur nos vêtements de sport. ${PITCH}` },
 };
 const STATIC_PAGES = ['/a-propos', '/contact', '/faq', '/cgv', '/confidentialite'];
 
@@ -51,7 +53,7 @@ export class SeoController {
   constructor(private prisma: PrismaService, private pricing: PricingService, private access: SiteAccess, private config: ConfigService) {}
 
   private get origin() {
-    return (this.config.get<string[]>('FRONTEND_URL') ?? [])[0]?.replace(/\/$/, '') || 'https://incomart.store';
+    return (this.config.get<string[]>('FRONTEND_URL') ?? [])[0]?.replace(/\/$/, '') || 'https://pestave.mygympro.club';
   }
   private abs(url: string) {
     // Photos de l'admin : adresse servie directement par le serveur web (voir src/catalog.tsx du site).

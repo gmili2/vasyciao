@@ -45,7 +45,7 @@ export class OrderMail {
             <p style="margin:8px 0 0;color:#666;font-size:13px">Votre commande sera expédiée dès réception du virement.</p></div>`
         : '';
       const page = (body: string) => `<div style="font-family:Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#111">
-        <p style="font-size:20px;letter-spacing:.2em;margin:0 0 24px">INCOMART</p>${body}</div>`;
+        <p style="font-size:20px;letter-spacing:.2em;margin:0 0 24px">PESTAVE</p>${body}</div>`;
 
       const shop = this.config.get<string>('ORDER_NOTIFY_EMAIL');
       const email = hasRealEmail(o.user.email) ? o.user.email : null;

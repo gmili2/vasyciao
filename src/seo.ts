@@ -3,10 +3,10 @@
  * L'API envoie déjà ces balises pour les pages produits (backend/src/catalog/seo.controller.ts) ;
  * on les tient à jour ici quand la navigation se fait sans recharger la page.
  */
-const ORIGIN = 'https://incomart.mygympro.club';
+const ORIGIN = 'https://pestave.mygympro.club';
 export const SHOP_PITCH = 'Livraison partout au Maroc, paiement à la livraison.';
-export const HOME_TITLE = 'INCOMART — Boutique basket au Maroc · Maillots, shorts, baskets';
-export const HOME_DESCRIPTION = `Boutique de basket au Maroc : maillots, shorts, sweats, baskets et accessoires. ${SHOP_PITCH}`;
+export const HOME_TITLE = 'PESTAVE — Vêtements de sport au Maroc · Running, training, football, yoga';
+export const HOME_DESCRIPTION = `Vêtements de sport au Maroc : running, training, football, yoga et accessoires. ${SHOP_PITCH}`;
 
 function tag<T extends HTMLElement>(selector: string, create: () => T): T {
   return document.head.querySelector<T>(selector) ?? document.head.appendChild(create());

@@ -19,18 +19,20 @@ export type ApiShopProduct = {
 };
 
 type Tag = Exclude<CategoryId, 'all'>;
-const TAGS: Tag[] = ['maillots', 'shorts', 'sweats', 'baskets', 'accessoires', 'new', 'promo'];
+const TAGS: Tag[] = ['homme', 'femme', 'running', 'training', 'football', 'yoga', 'accessoires', 'new', 'promo'];
 /** Catégorie de l'admin (slug) → rayon de la boutique. */
-const CATEGORY_TAG: Record<string, Tag> = { maillots: 'maillots', shorts: 'shorts', sweats: 'sweats', baskets: 'baskets', accessoires: 'accessoires' };
+const CATEGORY_TAG: Record<string, Tag> = { running: 'running', training: 'training', football: 'football', yoga: 'yoga', accessoires: 'accessoires' };
 const NEW_DAYS = 60;
-const HOUSE = 'INCOMART';
+const HOUSE = 'PESTAVE';
 const euros = (c: number) => c / 100;
 const swatch = ({ label, colorHex }: ApiSwatch): Swatch => ({ label, colorHex });
 
-/** Rayons de la boutique : ceux saisis au lancement, complétés par la catégorie, la promotion et la date. */
+/** Rayons de la boutique : ceux saisis au lancement, complétés par la catégorie, le genre (mixte : homme et femme), la promotion et la date. */
 function tagsOf(p: ApiShopProduct): Tag[] {
   const t = new Set<Tag>((p.extraSpecs?.tags ?? []).filter((x): x is Tag => (TAGS as string[]).includes(x)));
   if (CATEGORY_TAG[p.category.slug]) t.add(CATEGORY_TAG[p.category.slug]);
+  if (p.gender !== 'WOMEN') t.add('homme');
+  if (p.gender !== 'MEN') t.add('femme');
   if (p.onSale || p.variants.some((v) => v.onSale)) t.add('promo');
   if (p.publishedAt && Date.now() - new Date(p.publishedAt).getTime() < NEW_DAYS * 86_400_000) t.add('new');
   return [...t];

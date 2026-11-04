@@ -41,7 +41,7 @@ export class CreateProductDto {
   @IsString() @MinLength(1) @MaxLength(60) strapMaterial: string;
   @IsString() @MinLength(1) @MaxLength(40) color: string;
   @IsOptional() @IsString() @MaxLength(40) dialColor?: string;
-  @IsNumber({ maxDecimalPlaces: 1 }) @Min(0) @Max(99) diameterMm: number; // hérité du modèle montre, 0 pour les articles de basket
+  @IsNumber({ maxDecimalPlaces: 1 }) @Min(0) @Max(99) diameterMm: number; // hérité du modèle montre, 0 pour les vêtements
   @IsOptional() @IsNumber({ maxDecimalPlaces: 1 }) @Min(1) @Max(99) thicknessMm?: number | null;
   @IsOptional() @IsInt() @Min(4) @Max(40) lugWidthMm?: number | null;
   @IsInt() @Min(0) @Max(20_000) waterResistanceM: number;

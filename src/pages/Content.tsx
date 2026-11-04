@@ -12,13 +12,13 @@ export function About() {
     <>
       <section data-reveal style={{ padding: `${L.pageTop} ${L.px} 0`, display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 1100 }}>
         <span className="mono">À propos</span>
-        <h1 className="display" style={{ letterSpacing: '-.015em', lineHeight: 1, fontSize: L.h1 }}>Né sur le parquet.</h1>
+        <h1 className="display" style={{ letterSpacing: '-.015em', lineHeight: 1, fontSize: L.h1 }}>Fait pour bouger.</h1>
         <p style={{ margin: 0, maxWidth: 600, fontSize: 18, lineHeight: 1.65, color: 'var(--body)' }}>
-          INCOMART habille les joueurs et les fans de basket au Maroc : maillots, shorts, sweats, baskets et accessoires, choisis pour jouer fort et rester stylé en dehors du terrain. Style, qualité, confort.
+          PESTAVE habille celles et ceux qui bougent au Maroc : running, training, football et yoga. Des vêtements de sport respirants, légers et faits pour suivre chacun de tes mouvements, de la première foulée à la dernière répétition.
         </p>
       </section>
       <section data-reveal style={{ padding: `${L.sec} ${L.px} 0`, display: 'grid', gridTemplateColumns: L.split, gap: L.pGap, alignItems: 'end' }}>
-        <div className="ph" style={{ aspectRatio: '4/5' }}><span className="ph-caption">photo · le crew INCOMART</span></div>
+        <div className="ph" style={{ aspectRatio: '4/5' }}><span className="ph-caption">photo · la team PESTAVE</span></div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {PILLARS.map((pl) => (
             <div key={pl.n} style={{ padding: '26px 0', borderTop: '1px solid var(--line)', display: 'grid', gridTemplateColumns: '56px minmax(0,1fr)', gap: 12 }}>
@@ -38,7 +38,7 @@ export function About() {
 
 const CONTACT_INFO = [
   { k: 'Service client', v: 'Du lundi au samedi, 9 h – 19 h' },
-  { k: 'E-mail', v: 'contact@incomart.store' },
+  { k: 'E-mail', v: 'contact@pestave.ma' },
   { k: 'Réponse', v: 'Sous 24 h ouvrées' },
 ];
 
@@ -52,7 +52,7 @@ export function Contact() {
         <span className="mono">Contact</span>
         <h1 className="display" style={{ lineHeight: 1, fontSize: L.h2 }}>Une question ? On te répond.</h1>
         <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.65, color: 'var(--muted)', maxWidth: 380 }}>
-          Conseil taille, suivi de commande, maillots personnalisés pour ton équipe : on te répond sous 24 h.
+          Conseil taille, suivi de commande, tenues pour ton club ou ta salle : on te répond sous 24 h.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {CONTACT_INFO.map((ci) => (

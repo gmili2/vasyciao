@@ -1,139 +1,147 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ICONS, ProductGrid } from '../components/Catalog';
+import { Logo } from '../components/Shell';
 import { useCatalog } from '../catalog';
-import { COLLECTIONS, PILLARS, WHATSAPP } from '../data';
+import { COLLECTIONS, PILLARS, fmt } from '../data';
 import { useLayout } from '../layout';
-import { PATHS, productPath, shopPath } from '../routes';
+import { productPath, shopPath } from '../routes';
 import { useTilt } from '../tilt';
 
-const wrap = (px: string): React.CSSProperties => ({ maxWidth: 1280, margin: '0 auto', paddingLeft: px, paddingRight: px });
+const wrap = (px: string): React.CSSProperties => ({ maxWidth: 1320, margin: '0 auto', paddingLeft: px, paddingRight: px });
 
 /** Icônes des engagements (maquette) : livraison, échange, paiement, service client. */
 const PILLAR_ICONS = [
-  <><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></>,
-  <><path d="M4 12a8 8 0 0114-5l2 2M20 12a8 8 0 01-14 5l-2-2" /><path d="M20 4v5h-5M4 20v-5h5" /></>,
-  <><rect x="3" y="6" width="18" height="13" rx="2" /><path d="M3 10h18M7 15h4" /></>,
-  <path d="M21 15a2 2 0 01-2 2H8l-5 4V5a2 2 0 012-2h14a2 2 0 012 2z" />,
+  <><path d="M3 7h11v9H3z" /><path d="M14 10h4l3 3v3h-7" /><circle cx="7" cy="17.5" r="1.5" /><circle cx="17" cy="17.5" r="1.5" /></>,
+  <><path d="M4 12a8 8 0 1 0 2.5-5.8" /><path d="M4 4v4h4" /></>,
+  <><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></>,
+  <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />,
 ];
-
-/** Lien de contact : WhatsApp si un numéro est configuré, sinon la page contact. */
-export const quoteLink = (text: string) =>
-  WHATSAPP ? `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}` : PATHS.contact;
 
 function Hero() {
   const L = useLayout();
   const { products } = useCatalog();
   // Article mis en avant : le premier commandable avec une photo.
-  const hero = products.find((p) => p.purchasable && p.image) ?? products.find((p) => p.image);
-  const tilt = useTilt<HTMLAnchorElement>(6);
+  const hero = products.find((p) => p.purchasable && p.image) ?? products.find((p) => p.image) ?? products[0];
+  const tilt = useTilt<HTMLAnchorElement>(5);
   return (
-    <section style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid var(--line)' }}>
-      <div style={{ ...wrap(L.mobile ? '20px' : '24px'), paddingTop: L.mobile ? 48 : 72, paddingBottom: L.mobile ? 48 : 72, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 48 }}>
-        <div data-reveal style={{ flex: '1 1 480px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 24 }}>
-          <p className="eyebrow">Nouvelle collection · Saison 2026</p>
-          <h1 className="display" style={{ fontSize: 'clamp(56px, 8vw, 112px)', lineHeight: 0.92, textTransform: 'uppercase' }}>
-            Le terrain<br />commence <span style={{ color: 'var(--accent)' }}>ici.</span>
+    <section className="dark">
+      <div style={{ ...wrap(L.mobile ? '20px' : '24px'), paddingTop: L.mobile ? 32 : 48, paddingBottom: L.mobile ? 48 : 72, display: 'flex', flexWrap: 'wrap', gap: 40, alignItems: 'stretch' }}>
+        <div data-reveal style={{ flex: '1 1 460px', minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 28 }}>
+          <p className="eyebrow">Nouvelle collection</p>
+          <h1 className="display" style={{ fontSize: 'clamp(64px, 9vw, 132px)', lineHeight: 0.88, letterSpacing: '-1px' }}>
+            Bouge<br />sans<br />limite.
           </h1>
-          <p style={{ margin: 0, maxWidth: 480, fontSize: 18, lineHeight: 1.6, color: 'var(--muted)' }}>
-            Maillots, shorts, sweats et baskets pensés pour jouer fort et rester stylé en dehors du parquet.
+          <p style={{ margin: 0, maxWidth: 460, fontSize: 18, lineHeight: 1.55, color: 'var(--muted)' }}>
+            Des vêtements de sport pensés pour l’effort : respirants, légers et faits pour suivre chacun de tes mouvements.
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-            <Link className="btn btn-primary" to={shopPath('all')} style={{ height: 56 }}>Voir la collection</Link>
-            <a className="btn btn-ghost-light" href="#perso" style={{ height: 56 }}>Personnaliser un maillot</a>
+            <Link className="btn btn-primary" to={shopPath('homme')}>Acheter Homme</Link>
+            <Link className="btn btn-ghost-light" to={shopPath('femme')}>Acheter Femme</Link>
           </div>
         </div>
         <Link
-          ref={tilt} data-reveal to={hero ? productPath(hero.id) : shopPath('all')} aria-label={hero ? `Voir ${hero.name}` : 'Voir la collection'} className="tilt"
-          style={{ flex: '1 1 420px', minWidth: 0, position: 'relative', height: L.mobile ? 380 : 520, borderRadius: 24, background: '#161616', border: '1px solid var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}
+          ref={tilt} data-reveal to={hero ? productPath(hero.id) : shopPath('all')} aria-label={hero ? `Voir ${hero.name}` : 'Voir la boutique'} className="tilt"
+          style={{ flex: '1 1 520px', minWidth: 0, minHeight: L.mobile ? 420 : 560, background: '#1C1E24', borderRadius: 20, display: 'flex', alignItems: 'flex-end', padding: 24, position: 'relative', overflow: 'hidden' }}
         >
-          {/* Lignes du terrain : rond central et axes, à l'orange de la marque. */}
-          <div aria-hidden style={{ position: 'absolute', width: 420, maxWidth: '86%', aspectRatio: '1', borderRadius: '50%', border: '3px solid var(--accent)', opacity: 0.6 }} />
-          <div aria-hidden style={{ position: 'absolute', width: 3, height: '100%', background: 'var(--accent)', opacity: 0.35 }} />
-          <div aria-hidden style={{ position: 'absolute', height: 3, width: '100%', background: 'var(--accent)', opacity: 0.35 }} />
           {hero?.image
-            ? <img src={hero.image} alt={hero.name} style={{ position: 'relative', width: '78%', height: '86%', objectFit: 'contain', filter: 'drop-shadow(0 30px 40px rgba(0,0,0,.6))' }} />
-            : <svg aria-hidden width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="#F5F5F5" strokeWidth="1.2" strokeLinejoin="round" style={{ position: 'relative' }}><path d={ICONS.maillots} /></svg>}
+            ? <img src={hero.image} alt={hero.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+            : <span aria-hidden style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.9 }}><Logo size={L.mobile ? 160 : 240} /></span>}
           <span className="tilt-glare" />
+          {hero && (
+            <span style={{ position: 'relative', background: '#F2F1EC', color: '#0D0E11', borderRadius: 14, padding: '16px 18px', display: 'flex', gap: 16, alignItems: 'center', maxWidth: '100%' }}>
+              <span style={{ width: 56, height: 56, flex: 'none', background: '#DCDBD5', borderRadius: 10, overflow: 'hidden' }}>
+                {hero.image && <img src={hero.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+              </span>
+              <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+                <span style={{ fontSize: 14, fontWeight: 600 }}>{hero.name}</span>
+                <span style={{ fontSize: 13, color: '#4A4D55' }}>{hero.hasRange ? 'dès ' : ''}{fmt(hero.price)}</span>
+              </span>
+            </span>
+          )}
         </Link>
       </div>
     </section>
   );
 }
 
+function SectionHead({ title, link, to }: { title: string; link: string; to: string }) {
+  const L = useLayout();
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', gap: 16, marginBottom: 28 }}>
+      <h2 className="display" style={{ fontSize: L.mobile ? 42 : 56, lineHeight: 0.95 }}>{title}</h2>
+      <Link to={to} style={{ fontWeight: 600, fontSize: 15, textDecoration: 'underline', padding: '12px 0' }}>{link}</Link>
+    </div>
+  );
+}
+
 export default function Home() {
   const L = useLayout();
-  const { products, hidden } = useCatalog();
+  const { products, hidden, imageFor } = useCatalog();
   const px = L.mobile ? '20px' : '24px';
   // Nouveautés : les articles publiés le plus récemment.
   const fresh = useMemo(
     () => [...products].sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? '')).slice(0, 8),
     [products],
   );
-  const cats = COLLECTIONS.filter((c) => !hidden(c.id));
+  const sports = COLLECTIONS.filter((c) => !hidden(c.id));
+  // Bandeau « Collection performance » : une photo d'article training, sinon la première disponible.
+  const perfImg = imageFor('training') ?? products.find((p) => p.image)?.image;
 
   return (
     <>
       <Hero />
 
-      <section aria-label="Catégories" style={{ ...wrap(px), paddingTop: 72, paddingBottom: 24 }}>
-        <h2 className="display" style={{ margin: '0 0 28px', fontSize: L.mobile ? 38 : 48, textTransform: 'uppercase' }}>Acheter par catégorie</h2>
-        <div data-reveal style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${L.mobile ? 150 : 200}px, 1fr))`, gap: 16 }}>
-          {cats.map((c, i) => (
-            <Link
-              key={c.id} to={shopPath(c.id)}
-              style={{ background: '#161616', border: '1px solid var(--line)', borderRadius: 16, padding: 24, height: 200, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', transition: 'border-color .3s' }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--line)')}
-            >
-              <span style={{ width: 56, height: 56, borderRadius: '50%', border: '2px solid var(--accent)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--display-font)', fontSize: 22, fontWeight: 800 }}>
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <span style={{ fontFamily: 'var(--display-font)', fontSize: 30, fontWeight: 800, textTransform: 'uppercase', color: 'var(--ink)' }}>{c.label}</span>
-                <span style={{ fontSize: 14, color: 'var(--graphite)' }}>{c.sub}</span>
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section id="nouveautes" style={{ ...wrap(px), paddingTop: 72, paddingBottom: 72 }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', gap: 16, marginBottom: 28 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <p className="eyebrow">Tout juste arrivés</p>
-            <h2 className="display" style={{ fontSize: L.mobile ? 38 : 48, textTransform: 'uppercase' }}>Nouveautés</h2>
+      {sports.length > 0 && (
+        <section aria-label="Sports" style={{ ...wrap(px), paddingTop: L.mobile ? 56 : 80, paddingBottom: 40 }}>
+          <SectionHead title="Choisis ton sport" link="Tout voir" to={shopPath('all')} />
+          <div data-reveal style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${L.mobile ? 150 : 240}px, 1fr))`, gap: 16 }}>
+            {sports.map((c) => {
+              const img = imageFor(c.id as Parameters<typeof imageFor>[0]);
+              return (
+                <Link key={c.id} to={shopPath(c.id)} className="card" style={{ position: 'relative', height: L.mobile ? 240 : 380, background: '#DCDBD5', borderRadius: 16, display: 'flex', alignItems: 'flex-end', padding: L.mobile ? 14 : 20, overflow: 'hidden' }}>
+                  {img
+                    ? <img className="zoom-hover" src={img} alt="" loading="lazy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                    : <svg aria-hidden viewBox="0 0 24 24" fill="none" stroke="#4A4D55" strokeWidth="1" strokeLinejoin="round" style={{ position: 'absolute', top: '22%', left: '50%', width: '38%', transform: 'translateX(-50%)' }}><path d={ICONS[c.id as keyof typeof ICONS] ?? ICONS.training} /></svg>}
+                  <span style={{ position: 'relative', background: '#0D0E11', color: '#F2F1EC', fontFamily: 'var(--display-font)', fontWeight: 800, fontSize: L.mobile ? 20 : 26, padding: '8px 16px', borderRadius: 8, textTransform: 'uppercase' }}>{c.label}</span>
+                </Link>
+              );
+            })}
           </div>
-          <Link to={shopPath('all')} style={{ fontWeight: 700, fontSize: 15, padding: '12px 0', color: 'var(--accent)' }}>Tout voir →</Link>
-        </div>
+        </section>
+      )}
+
+      <section id="nouveautes" style={{ ...wrap(px), paddingTop: 40, paddingBottom: L.mobile ? 56 : 80 }}>
+        <SectionHead title="Nouveautés" link="Voir les nouveautés" to={shopPath('new')} />
         <ProductGrid items={fresh} />
       </section>
 
-      <section id="perso" style={{ ...wrap(px), paddingBottom: 72 }}>
-        <div data-reveal style={{ background: 'var(--accent)', color: '#0A0A0A', borderRadius: 24, padding: L.mobile ? '40px 24px' : '56px 48px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
-          <div style={{ flex: '1 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, letterSpacing: '.24em' }}>ÉQUIPES · CLUBS · ÉCOLES</p>
-            <h2 className="display" style={{ fontSize: 'clamp(40px, 5vw, 64px)', textTransform: 'uppercase' }}>Ton nom. Ton numéro.<br />Ton équipe.</h2>
-            <p style={{ margin: 0, fontSize: 17, lineHeight: 1.6, maxWidth: 520 }}>Maillots et shorts personnalisés pour toute l’équipe : nom, numéro et logo du club.</p>
+      <section style={{ background: 'var(--accent)', color: '#0D0E11' }}>
+        <div data-reveal style={{ ...wrap(px), paddingTop: L.mobile ? 48 : 72, paddingBottom: L.mobile ? 48 : 72, display: 'flex', flexWrap: 'wrap', gap: 40, alignItems: 'center' }}>
+          <div style={{ flex: '1 1 480px', minWidth: 0, minHeight: L.mobile ? 280 : 380, background: '#0D0E11', borderRadius: 20, overflow: 'hidden', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {perfImg
+              ? <img src={perfImg} alt="" loading="lazy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              : <Logo size={160} />}
           </div>
-          <a className="btn btn-dark" href={quoteLink('Bonjour Incomart, je voudrais un devis pour des maillots personnalisés.')} target={WHATSAPP ? '_blank' : undefined} rel="noreferrer" style={{ height: 58, padding: '0 32px', fontSize: 16 }}>
-            Demander un devis
-          </a>
+          <div style={{ flex: '1 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <p style={{ margin: 0, fontSize: 13, fontWeight: 600, letterSpacing: 3 }}>COLLECTION PERFORMANCE</p>
+            <h2 className="display" style={{ fontSize: 'clamp(52px, 6vw, 84px)', lineHeight: 0.9 }}>Fait pour<br />transpirer.</h2>
+            <p style={{ margin: 0, fontSize: 17, lineHeight: 1.55, maxWidth: 460 }}>Tissus techniques à séchage rapide, coutures plates et coupes ajustées pour tes séances les plus intenses.</p>
+            <div><Link className="btn btn-dark" to={shopPath('training')}>Découvrir la collection</Link></div>
+          </div>
         </div>
       </section>
 
-      <section aria-label="Nos engagements" style={{ borderTop: '1px solid var(--line)' }}>
-        <div style={{ ...wrap(px), paddingTop: 48, paddingBottom: 48, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 32 }}>
-          {PILLARS.map((p, i) => (
-            <div key={p.n} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-              <svg aria-hidden width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }}>{PILLAR_ICONS[i]}</svg>
-              <div>
-                <h3 style={{ margin: '0 0 4px', fontSize: 16 }}>{p.t}</h3>
-                <p style={{ margin: 0, fontSize: 14, color: 'var(--graphite)' }}>{p.d}</p>
-              </div>
+      <section aria-label="Nos engagements" style={{ ...wrap(px), paddingTop: 56, paddingBottom: 56, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 24 }}>
+        {PILLARS.map((p, i) => (
+          <div key={p.n} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+            <svg aria-hidden width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0D0E11" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }}>{PILLAR_ICONS[i]}</svg>
+            <div>
+              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>{p.t}</h3>
+              <p style={{ margin: '4px 0 0', fontSize: 14, color: 'var(--graphite)' }}>{p.d}</p>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </section>
     </>
   );

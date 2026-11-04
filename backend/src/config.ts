@@ -17,7 +17,7 @@ const schema = z.object({
   SITE_ACCESS_CODE: z.string().min(6, 'SITE_ACCESS_CODE : 6 caractères minimum').optional(),
   // E-mails de commande via Resend (facultatif : sans clé, rien n'est envoyé).
   RESEND_API_KEY: z.string().optional(),
-  MAIL_FROM: z.string().default('INCOMART <onboarding@resend.dev>'),
+  MAIL_FROM: z.string().default('PESTAVE <onboarding@resend.dev>'),
   // Adresse(s) de la boutique prévenue(s) à chaque commande, séparées par des virgules.
   ORDER_NOTIFY_EMAIL: z.string().optional(),
   // Pixel Meta (Facebook) des campagnes publicitaires : identifiant numérique, facultatif.

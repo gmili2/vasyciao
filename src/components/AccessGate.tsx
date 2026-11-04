@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { api, ApiError } from '../api';
+import { Logo } from './Shell';
 
 /** Écran d'entrée de la boutique en accès privé. */
 export function AccessGate({ onUnlock }: { onUnlock: () => void }) {
@@ -19,14 +20,14 @@ export function AccessGate({ onUnlock }: { onUnlock: () => void }) {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, background: 'var(--ink)' }}>
-      <form onSubmit={submit} style={{ width: 'min(420px,100%)', background: 'var(--ivory)', padding: 'clamp(28px,6vw,48px)', display: 'flex', flexDirection: 'column', gap: 18, textAlign: 'center', alignItems: 'center' }}>
-        <img src="/logo.png" alt="INCOMART" style={{ width: 96, height: 96, objectFit: 'cover', borderRadius: '50%' }} />
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, background: '#0D0E11' }}>
+      <form onSubmit={submit} style={{ width: 'min(420px,100%)', background: 'var(--ivory)', borderRadius: 20, padding: 'clamp(28px,6vw,48px)', display: 'flex', flexDirection: 'column', gap: 18, textAlign: 'center', alignItems: 'center' }}>
+        <span style={{ width: 96, height: 96, borderRadius: 24, background: '#0D0E11', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Logo size={58} /></span>
         <span className="mono" style={{ fontSize: 10.5, letterSpacing: '.16em' }}>Accès privé</span>
-        <h1 className="display" style={{ margin: 0, fontSize: 26, lineHeight: 1.1 }}>Bienvenue chez INCOMART</h1>
+        <h1 className="display" style={{ margin: 0, fontSize: 26, lineHeight: 1.1 }}>Bienvenue chez PESTAVE</h1>
         <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.6, color: 'var(--muted)' }}>La boutique est réservée à nos invités. Saisissez votre code d’accès pour découvrir la collection.</p>
         <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="Code d’accès" aria-label="Code d’accès" autoFocus required autoComplete="off"
-          style={{ width: '100%', height: 52, padding: '0 16px', border: '1px solid var(--line-strong)', background: 'var(--paper)', fontSize: 15, textAlign: 'center', letterSpacing: '.1em' }} />
+          style={{ width: '100%', height: 52, padding: '0 16px', border: '1px solid var(--line-strong)', background: 'var(--paper)', borderRadius: 999, fontSize: 15, textAlign: 'center', letterSpacing: '.1em' }} />
         {error && <span role="alert" style={{ fontSize: 13, color: 'oklch(0.55 0.15 25)' }}>{error}</span>}
         <button className="btn btn-primary" disabled={busy || !code.trim()} style={{ width: '100%', height: 52, opacity: busy || !code.trim() ? 0.5 : 1 }}>{busy ? 'Vérification…' : 'Entrer'}</button>
       </form>

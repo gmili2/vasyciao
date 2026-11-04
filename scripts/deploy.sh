@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# Déploie INCOMART sur l'hébergement cPanel Namecheap (même compte que GMBIJOUX) :
-#   site  → ~/incomart.mygympro.club          https://incomart.mygympro.club
-#   API   → ~/incomart-api (app Node.js cPanel, URL /api)
+# Déploie PESTAVE sur l'hébergement cPanel Namecheap (même compte que GMBIJOUX) :
+#   site  → ~/pestave.mygympro.club          https://pestave.mygympro.club
+#   API   → ~/pestave-api (app Node.js cPanel, URL /api)
 # Premier lancement : crée la base MySQL, l'app Node.js, le .env (mots de passe aléatoires) et importe le
 # catalogue de départ. Lancements suivants : met seulement le code à jour (le .env et les photos sont gardés).
 #   ./scripts/deploy.sh
 set -euo pipefail
 
-DOMAIN=incomart.mygympro.club
-SITE_DIR=incomart.mygympro.club
-APP_DIR=incomart-api
-DB=gmbimeor_incomart
+DOMAIN=pestave.mygympro.club
+SITE_DIR=pestave.mygympro.club
+APP_DIR=pestave-api
+DB=gmbimeor_pestave
 NODE_MAJOR=22
 SSH_TARGET=gmbimeor@server71-1.web-hosting.com
 SSH="ssh -i $HOME/.ssh/gmbijoux_deploy -p 21098 -o LogLevel=ERROR"
@@ -38,10 +38,10 @@ DATABASE_URL="mysql://$DB:$DBPASS@127.0.0.1:3306/$DB?sslmode=disable"
 JWT_SECRET="$(openssl rand -hex 32)"
 FRONTEND_URL="https://$DOMAIN"
 SITE_INDEX_FILE="/home/$USER/$DOMAIN/index.html"
-ADMIN_EMAIL="admin@incomart.store"
+ADMIN_EMAIL="admin@pestave.ma"
 ADMIN_PASSWORD="$ADMIN_PASS"
 ENV
-  echo "  .env créé — compte admin : admin@incomart.store / $ADMIN_PASS  (notez-le, il n'est affiché qu'une fois)"
+  echo "  .env créé — compte admin : admin@pestave.ma / $ADMIN_PASS  (notez-le, il n'est affiché qu'une fois)"
 fi
 if [ ! -d ~/nodevenv/$APP_DIR ]; then
   cloudlinux-selector create --json --interpreter nodejs --version $NODE_MAJOR --app-root $APP_DIR \

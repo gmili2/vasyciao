@@ -31,23 +31,23 @@ const CUSTOMERS: [name: string, email: string, since: string][] = [
 
 type Pay = 'Payé' | 'À encaisser' | 'Échoué' | 'Remboursé';
 const ORDERS: [number: string, email: string, date: string, items: [slug: string, qty: number, variant?: string][], status: OrderStatus, method: PaymentMethod, pay: Pay][] = [
-  ['IN-284117', 'camille.martin@mail.fr', '07/10/2026 11:42', [['maillot-court-orange', 1, 'Orange · M']], 'PENDING', 'CASH_ON_DELIVERY', 'À encaisser'],
-  ['IN-284116', 'hugo.b@mail.fr', '07/10/2026 09:15', [['short-mesh-noir', 1, 'L'], ['ballon-outdoor-t7', 1]], 'CONFIRMED', 'CASH_ON_DELIVERY', 'À encaisser'],
-  ['IN-284115', 'lea.dubois@mail.fr', '06/10/2026 18:03', [['basket-high-top', 1, '43']], 'PROCESSING', 'CASH_ON_DELIVERY', 'À encaisser'],
-  ['IN-284114', 'nadia.h@mail.fr', '06/10/2026 14:27', [['hoodie-warm-up', 1, 'Noir · M']], 'SHIPPED', 'BANK_TRANSFER', 'Payé'],
-  ['IN-284113', 't.petit@mail.fr', '05/10/2026 10:50', [['maillot-reversible', 2, 'Orange / Blanc · XL']], 'DELIVERED', 'CASH_ON_DELIVERY', 'Payé'],
-  ['IN-284112', 'ines.moreau@mail.fr', '04/10/2026 16:11', [['chaussettes-crew', 2, '39-42']], 'DELIVERED', 'CASH_ON_DELIVERY', 'Payé'],
-  ['IN-284111', 'k.benali@mail.fr', '03/10/2026 12:38', [['basket-low-street', 1, 'Blanc · 42']], 'CANCELLED', 'CASH_ON_DELIVERY', 'Échoué'],
-  ['IN-284110', 'julie.l@mail.fr', '02/10/2026 20:04', [['short-retro-blanc', 1, 'S']], 'REFUNDED', 'BANK_TRANSFER', 'Remboursé'],
-  ['IN-284109', 'a.leroy@mail.fr', '01/10/2026 08:47', [['maillot-court-orange', 1, 'Noir · L'], ['sac-a-dos-hoops', 1]], 'DELIVERED', 'CASH_ON_DELIVERY', 'Payé'],
+  ['PS-284117', 'camille.martin@mail.fr', '07/10/2026 11:42', [['legging-compression', 1, 'Noir · M']], 'PENDING', 'CASH_ON_DELIVERY', 'À encaisser'],
+  ['PS-284116', 'hugo.b@mail.fr', '07/10/2026 09:15', [['short-running-2-en-1', 1, 'Noir · L'], ['gourde-isotherme-750', 1, 'Volt']], 'CONFIRMED', 'CASH_ON_DELIVERY', 'À encaisser'],
+  ['PS-284115', 'lea.dubois@mail.fr', '06/10/2026 18:03', [['brassiere-maintien-fort', 1, 'Volt · S']], 'PROCESSING', 'CASH_ON_DELIVERY', 'À encaisser'],
+  ['PS-284114', 'nadia.h@mail.fr', '06/10/2026 14:27', [['top-yoga-seamless', 1, 'Craie · M']], 'SHIPPED', 'BANK_TRANSFER', 'Payé'],
+  ['PS-284113', 't.petit@mail.fr', '05/10/2026 10:50', [['t-shirt-training-dry', 2, 'Noir · XL']], 'DELIVERED', 'CASH_ON_DELIVERY', 'Payé'],
+  ['PS-284112', 'ines.moreau@mail.fr', '04/10/2026 16:11', [['chaussettes-running-lot-3', 2, 'Blanc · 39-42']], 'DELIVERED', 'CASH_ON_DELIVERY', 'Payé'],
+  ['PS-284111', 'k.benali@mail.fr', '03/10/2026 12:38', [['maillot-football-pro', 1, 'Blanc · L']], 'CANCELLED', 'CASH_ON_DELIVERY', 'Échoué'],
+  ['PS-284110', 'julie.l@mail.fr', '02/10/2026 20:04', [['pantalon-yoga-flow', 1, 'Noir · S']], 'REFUNDED', 'BANK_TRANSFER', 'Remboursé'],
+  ['PS-284109', 'a.leroy@mail.fr', '01/10/2026 08:47', [['veste-coupe-vent-stride', 1, 'Noir · L'], ['sac-de-sport-30l', 1]], 'DELIVERED', 'CASH_ON_DELIVERY', 'Payé'],
 ];
 const FLOW: OrderStatus[] = ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
 
 const REVIEWS: [slug: string, email: string, date: string, rating: number, title: string, comment: string, approved: boolean][] = [
-  ['maillot-court-orange', 'a.leroy@mail.fr', '06/10/2026', 5, 'Top qualité', 'Le mesh respire bien, la couleur est encore plus belle en vrai. Livraison rapide.', false],
-  ['chaussettes-crew', 'ines.moreau@mail.fr', '06/10/2026', 5, 'Confortables', 'Bon maintien, elles tiennent bien pendant tout le match.', false],
-  ['short-retro-blanc', 'julie.l@mail.fr', '04/10/2026', 3, 'Taille un peu grand', 'Joli short, mais il taille grand : prenez une taille en dessous.', false],
-  ['basket-high-top', 'lea.dubois@mail.fr', '01/10/2026', 5, 'Excellente accroche', 'Très bon maintien de la cheville, aucune glissade sur le parquet.', true],
+  ['veste-coupe-vent-stride', 'a.leroy@mail.fr', '06/10/2026', 5, 'Top qualité', 'Très légère, coupe bien le vent et tient dans la poche. Livraison rapide.', false],
+  ['chaussettes-running-lot-3', 'ines.moreau@mail.fr', '06/10/2026', 5, 'Confortables', 'Bon maintien, aucune ampoule sur mon semi-marathon.', false],
+  ['pantalon-yoga-flow', 'julie.l@mail.fr', '04/10/2026', 3, 'Taille un peu grand', 'Joli pantalon, très doux, mais il taille grand : prenez une taille en dessous.', false],
+  ['brassiere-maintien-fort', 'lea.dubois@mail.fr', '01/10/2026', 5, 'Maintien parfait', 'Enfin une brassière qui tient vraiment pendant la course, sans frottement.', true],
 ];
 
 async function reset() {
@@ -63,7 +63,7 @@ async function reset() {
 }
 
 async function main() {
-  const adminEmail = process.env.ADMIN_EMAIL ?? 'admin@incomart.store';
+  const adminEmail = process.env.ADMIN_EMAIL ?? 'admin@pestave.ma';
   const adminPassword = process.env.ADMIN_PASSWORD;
   if (!adminPassword || adminPassword.length < 10) throw new Error('ADMIN_PASSWORD (10 caractères min.) doit être défini dans .env');
 
@@ -72,7 +72,7 @@ async function main() {
   const admin = await prisma.user.create({
     data: {
       email: adminEmail, passwordHash: await hashPassword(adminPassword),
-      firstName: 'Admin', lastName: 'INCOMART', role: 'ADMIN', emailVerifiedAt: new Date(),
+      firstName: 'Admin', lastName: 'PESTAVE', role: 'ADMIN', emailVerifiedAt: new Date(),
     },
   });
 
@@ -183,15 +183,15 @@ async function main() {
 
   await prisma.promotion.create({
     data: {
-      name: 'Semaine Maillots', type: 'PERCENTAGE', value: 15, startsAt: new Date('2026-10-05T00:00:00+02:00'), endsAt: new Date('2026-10-12T23:59:59+02:00'),
-      targets: { create: { categoryId: cats.maillots } },
+      name: 'Semaine Running', type: 'PERCENTAGE', value: 15, startsAt: new Date('2026-10-05T00:00:00+02:00'), endsAt: new Date('2026-10-12T23:59:59+02:00'),
+      targets: { create: { categoryId: cats.running } },
     },
   });
-  const lowStreet = await prisma.collection.findUniqueOrThrow({ where: { slug: 'basket-low-street' } });
+  const stride = await prisma.collection.findUniqueOrThrow({ where: { slug: 'veste-coupe-vent-stride' } });
   await prisma.promotion.create({
     data: {
-      name: 'Lancement Low Street', type: 'FIXED_AMOUNT', value: dh(50), startsAt: new Date('2026-10-20T00:00:00+02:00'), endsAt: new Date('2026-11-03T23:59:59+01:00'),
-      targets: { create: { collectionId: lowStreet.id } },
+      name: 'Lancement Stride', type: 'FIXED_AMOUNT', value: dh(50), startsAt: new Date('2026-10-20T00:00:00+02:00'), endsAt: new Date('2026-11-03T23:59:59+01:00'),
+      targets: { create: { collectionId: stride.id } },
     },
   });
 

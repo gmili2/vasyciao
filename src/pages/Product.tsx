@@ -55,7 +55,7 @@ export default function Product() {
     if (!p) return;
     const text = `${p.kind ? p.kind + '. ' : ''}${p.desc}`.replace(/\s+/g, ' ');
     setMeta({
-      title: `${p.name} — ${fmt(p.price)} — INCOMART`,
+      title: `${p.name} — ${fmt(p.price)} — PESTAVE`,
       description: `${p.name} à ${fmt(p.price)}${p.hasRange ? ' et plus' : ''}. ${text} ${SHOP_PITCH}`.slice(0, 300),
       path: productPath(p.id),
     });
@@ -176,7 +176,7 @@ export default function Product() {
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoom((z) => !z); } }}
               onMouseMove={(e) => zoom && setZxy(pos(e))}
               onMouseLeave={() => zoom && setZoom(false)}
-              className="ph" style={{ aspectRatio: '1', backgroundImage: 'none', cursor: zoom ? 'zoom-out' : 'zoom-in', background: mainPhoto ? '#161616' : 'transparent' }}
+              className="ph" style={{ aspectRatio: '1', backgroundImage: 'none', cursor: zoom ? 'zoom-out' : 'zoom-in', background: mainPhoto ? 'var(--card)' : 'transparent' }}
             >
               <div className="ph" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: zoom ? 'scale(2.2)' : 'scale(1)', transformOrigin: `${zxy.x}% ${zxy.y}%`, transition: 'transform .6s var(--ease)' }}>
                 {mainPhoto
@@ -185,7 +185,7 @@ export default function Product() {
                 }
               </div>
               <span className="ph-caption">photo · {p.name}{variant ? ' ' + variant.values.map((v) => v.label).join(' · ') : ''} — {photos.length ? `${shown + 1} / ${gallery.length}` : VIEWS[Math.max(0, img)]}</span>
-              <span style={{ position: 'absolute', right: 14, top: 14, padding: '7px 12px', borderRadius: 999, background: 'rgba(10,10,10,.85)', fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.12em', textTransform: 'uppercase' }}>
+              <span style={{ position: 'absolute', right: 14, top: 14, padding: '7px 12px', borderRadius: 999, background: 'rgba(242,241,236,.9)', color: '#0D0E11', fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.12em', textTransform: 'uppercase' }}>
                 {zoom ? 'Zoom × 2,2' : 'Cliquer pour zoomer'}
               </span>
             </div>
@@ -195,13 +195,13 @@ export default function Product() {
               <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(gallery.length, 6)},minmax(0,1fr))`, gap: 10 }}>
                 {gallery.map(({ src, video }, i) => (
                   <button key={src} className="ph" onClick={() => { setImg(i); setZoom(false); }} aria-label={video ? `Vidéo ${i - photos.length + 1}` : `Photo ${i + 1}`} aria-pressed={i === shown}
-                    style={{ aspectRatio: '1', padding: 0, cursor: 'pointer', backgroundImage: 'none', background: video ? '#000' : '#161616', border: `1px solid ${i === shown ? 'var(--ink)' : 'transparent'}`, overflow: 'hidden', position: 'relative' }}>
+                    style={{ aspectRatio: '1', padding: 0, cursor: 'pointer', backgroundImage: 'none', background: video ? '#000' : 'var(--card)', border: `1px solid ${i === shown ? 'var(--ink)' : 'transparent'}`, overflow: 'hidden', position: 'relative' }}>
                     {video
                       ? <>
                           {/* #t=0.1 : première image de la vidéo comme vignette. */}
                           <video src={`${src}#t=0.1`} muted playsInline preload="metadata" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                          <span aria-hidden style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 30, height: 30, borderRadius: '50%', background: 'rgba(10,10,10,.85)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <span style={{ width: 0, height: 0, borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: '10px solid var(--ink)', marginLeft: 3 }} />
+                          <span aria-hidden style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 30, height: 30, borderRadius: '50%', background: 'rgba(242,241,236,.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ width: 0, height: 0, borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: '10px solid #0D0E11', marginLeft: 3 }} />
                           </span>
                         </>
                       : <img src={src} alt="" loading="lazy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}
@@ -213,10 +213,10 @@ export default function Product() {
               {VIEWS.map((v, i) => (
                 <button
                   key={v} className="ph" onClick={() => { setImg(i); setZoom(false); }} aria-label={`Vue ${v}`} aria-pressed={i === shown}
-                  style={{ aspectRatio: '1', padding: 0, cursor: 'pointer', backgroundImage: p.image ? 'none' : 'repeating-linear-gradient(135deg,rgba(245,245,245,.045) 0 1px,transparent 1px 9px)', background: p.image && i === 0 ? '#161616' : undefined, border: `1px solid ${i === shown ? 'var(--ink)' : 'transparent'}`, display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-start', overflow: 'hidden', position: 'relative' }}
+                  style={{ aspectRatio: '1', padding: 0, cursor: 'pointer', backgroundImage: p.image ? 'none' : 'repeating-linear-gradient(135deg,rgba(13,14,17,.04) 0 1px,transparent 1px 9px)', background: p.image && i === 0 ? 'var(--card)' : undefined, border: `1px solid ${i === shown ? 'var(--ink)' : 'transparent'}`, display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-start', overflow: 'hidden', position: 'relative' }}
                 >
                   {p.image && i === 0 && <img src={p.image} alt={v} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />}
-                  <span style={{ position: 'relative', zIndex: 1, padding: 8, fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: p.image ? 'rgba(245,245,245,.7)' : 'var(--graphite)', textAlign: 'left' }}>{v}</span>
+                  <span style={{ position: 'relative', zIndex: 1, padding: 8, fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: p.image ? 'rgba(13,14,17,.6)' : 'var(--graphite)', textAlign: 'left' }}>{v}</span>
                 </button>
               ))}
             </div>
@@ -258,7 +258,7 @@ export default function Product() {
                       const title = v.label + (ok ? '' : ' — épuisé');
                       return isColor ? (
                         <button key={v.label} role="radio" aria-checked={on} aria-label={title} title={title} onClick={() => choose(o.name, v.label)}
-                          style={{ position: 'relative', width: 40, height: 40, borderRadius: '50%', padding: 0, cursor: 'pointer', background: v.colorHex ?? 'var(--paper)', border: 0, boxShadow: on ? '0 0 0 2px var(--ivory), 0 0 0 3px var(--accent)' : 'inset 0 0 0 1px rgba(245,245,245,.18)', opacity: ok ? 1 : 0.45, transition: 'box-shadow .25s' }}>
+                          style={{ position: 'relative', width: 40, height: 40, borderRadius: '50%', padding: 0, cursor: 'pointer', background: v.colorHex ?? 'var(--paper)', border: 0, boxShadow: on ? '0 0 0 2px var(--ivory), 0 0 0 3px var(--ink)' : 'inset 0 0 0 1px rgba(13,14,17,.2)', opacity: ok ? 1 : 0.45, transition: 'box-shadow .25s' }}>
                           {!ok && <span aria-hidden style={{ position: 'absolute', left: '50%', top: 4, bottom: 4, width: 1, background: 'var(--ink)', transform: 'rotate(45deg)' }} />}
                         </button>
                       ) : (
@@ -310,7 +310,7 @@ export default function Product() {
                               const pick = () => setExtra((xs) => { const next = [...xs]; next[i - 1] = v.id; return next; });
                               return hex ? (
                                 <button key={v.id} role="radio" aria-checked={on} aria-label={name} title={name} onClick={pick}
-                                  style={{ width: 32, height: 32, borderRadius: '50%', padding: 0, cursor: 'pointer', background: hex, border: 0, boxShadow: on ? '0 0 0 2px var(--ivory), 0 0 0 3px var(--accent)' : 'inset 0 0 0 1px rgba(245,245,245,.18)' }} />
+                                  style={{ width: 32, height: 32, borderRadius: '50%', padding: 0, cursor: 'pointer', background: hex, border: 0, boxShadow: on ? '0 0 0 2px var(--ivory), 0 0 0 3px var(--ink)' : 'inset 0 0 0 1px rgba(13,14,17,.2)' }} />
                               ) : (
                                 <button key={v.id} role="radio" aria-checked={on} className={`chip${on ? ' active' : ''}`} onClick={pick} style={{ height: 36, padding: '0 14px', fontSize: 12.5 }}>{name}</button>
                               );
@@ -394,7 +394,7 @@ export default function Product() {
 
       {L.mobile && (
         // Barre d'achat mobile : prix et coloris, ajout au panier (icône) et achat direct vers le formulaire de commande.
-        <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 45, background: 'rgba(10,10,10,.94)', backdropFilter: 'blur(12px)', borderTop: '1px solid var(--line)', padding: '10px 16px calc(10px + env(safe-area-inset-bottom))', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 45, background: 'rgba(242,241,236,.96)', backdropFilter: 'blur(12px)', borderTop: '1px solid var(--line)', padding: '10px 16px calc(10px + env(safe-area-inset-bottom))', display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1, minWidth: 0, flex: 'none', maxWidth: '34%' }}>
             <span style={{ fontSize: 16, fontWeight: 600, whiteSpace: 'nowrap' }}>{fmt(packTotal)}</span>
             {packTotal < packSum

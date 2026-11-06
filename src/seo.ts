@@ -5,8 +5,8 @@
  */
 const ORIGIN = 'https://vasyciao.mygympro.club';
 export const SHOP_PITCH = 'Livraison partout au Maroc, paiement à la livraison.';
-export const HOME_TITLE = 'VASYCIAO — Vêtements femme & homme au Maroc · La mode qui avance avec vous';
-export const HOME_DESCRIPTION = `Vasyciao : vestes, hauts, pantalons et robes pour femme et homme : coupes amples, matières nobles. ${SHOP_PITCH}`;
+export const HOME_TITLE = 'VASYCIAO — Vêtements femme & homme au Maroc · Noir, blanc, coupes qui tiennent';
+export const HOME_DESCRIPTION = `Vasyciao : vestes, hauts, pantalons et robes pour femme et homme, en noir et blanc. ${SHOP_PITCH}`;
 
 function tag<T extends HTMLElement>(selector: string, create: () => T): T {
   return document.head.querySelector<T>(selector) ?? document.head.appendChild(create());

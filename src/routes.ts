@@ -33,5 +33,4 @@ export const PATHS = {
   cgv: '/cgv',
   privacy: '/confidentialite',
   account: '/compte',
-  favorites: '/favoris',
 };

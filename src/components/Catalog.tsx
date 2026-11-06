@@ -4,7 +4,7 @@ import { useCatalog } from '../catalog';
 import { useLayout } from '../layout';
 import { productPath, shopPath } from '../routes';
 import { useStore } from '../store';
-import { ArrowIcon, HeartIcon } from './icons';
+import { ArrowIcon } from './icons';
 
 /** Silhouettes des rayons — visuel provisoire tant qu'un article n'a pas de photo. */
 export const ICONS = {
@@ -20,7 +20,7 @@ export const iconOf = (p: Pick<Product, 'cats'>) =>
 
 export function Dial({ size = '50%', path = ICONS.hauts }: { size?: string; dark?: boolean; path?: string }) {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="#8C8C8A" strokeWidth="1" strokeLinejoin="round" style={{ width: size, maxWidth: 120 }}>
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="#5A5A58" strokeWidth="1" strokeLinejoin="round" style={{ width: size, maxWidth: 120 }}>
       <path d={path} />
     </svg>
   );
@@ -30,61 +30,57 @@ export function Dial({ size = '50%', path = ICONS.hauts }: { size?: string; dark
 export const whoOf = (p: Pick<Product, 'cats'>) =>
   p.cats.includes('femme') && p.cats.includes('homme') ? 'Mixte' : p.cats.includes('femme') ? 'Femme' : p.cats.includes('homme') ? 'Homme' : '';
 
+const mono: React.CSSProperties = { fontFamily: 'var(--mono)' };
+
 export function ProductCard({ p }: { p: Product }) {
-  const L = useLayout();
   const navigate = useNavigate();
-  const { add, favs, toggleFav } = useStore();
-  const fav = favs.includes(p.id);
-  const tag = p.inStock ? badgeOf(p) : 'Épuisé';
+  const { add } = useStore();
+  const { products } = useCatalog();
+  const n = products.findIndex((x) => x.id === p.id) + 1;
+  const tag = (p.inStock ? badgeOf(p) : 'Épuisé') || whoOf(p);
   const needsChoice = p.variants.length > 1;
-  const canBuy = p.inStock && p.purchasable;
   return (
-    <article className="card" style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 }}>
-      <div style={{ position: 'relative', aspectRatio: '3 / 4', background: 'var(--stone)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-        <Link to={productPath(p.id)} aria-label={p.name} style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {p.image
-            ? <img className="zoom-hover" src={p.image} alt={p.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
-            : <Dial size="34%" path={iconOf(p)} />}
-        </Link>
-        {tag && <span style={{ position: 'absolute', zIndex: 2, top: 12, left: 12, background: p.inStock ? '#FFFFFF' : '#111111', color: p.inStock ? (p.old ? 'var(--sale)' : '#111111') : '#FFFFFF', fontSize: 10, fontWeight: 600, letterSpacing: '.18em', padding: '6px 9px', textTransform: 'uppercase' }}>{tag}</span>}
-        <button
-          onClick={() => toggleFav(p.id)} aria-label={fav ? `Retirer ${p.name} des favoris` : `Ajouter ${p.name} aux favoris`} aria-pressed={fav}
-          style={{ position: 'absolute', zIndex: 2, top: 4, right: 4, width: 44, height: 44, background: 'transparent', border: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          <span style={{ width: 32, height: 32, borderRadius: '50%', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><HeartIcon size={15} color="#111111" fill={fav ? '#111111' : 'none'} /></span>
-        </button>
-        {canBuy && (
-          <button
-            className="btn btn-dark"
-            // Avec plusieurs déclinaisons (taille, couleur…), le choix se fait sur la fiche.
-            onClick={() => { if (needsChoice) navigate(productPath(p.id)); else add(p.id, 1, p.variants[0]?.id); }}
-            style={{ position: 'absolute', zIndex: 2, left: 10, right: 10, bottom: 10, height: 44, padding: '0 8px', fontSize: 11 }}
-          >
-            {needsChoice ? (L.mobile ? 'Choisir' : 'Choisir la taille') : (L.mobile ? 'Ajouter' : 'Ajouter au panier')}
-          </button>
-        )}
+    <article className="card" style={{ background: 'var(--ivory)', padding: 16, display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
+      <div style={{ ...mono, display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 12, color: 'var(--graphite)', textTransform: 'uppercase' }}>
+        <span>N° {String(n || 0).padStart(3, '0')}</span><span>{tag}</span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        {whoOf(p) && <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.16em', color: 'var(--graphite)', textTransform: 'uppercase' }}>{whoOf(p)}</span>}
+      <Link to={productPath(p.id)} aria-label={p.name} style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', aspectRatio: '3 / 4', background: 'var(--stone)', overflow: 'hidden' }}>
+        {p.image
+          ? <img className="zoom-hover" src={p.image} alt={p.name} loading="lazy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+          : <Dial size="34%" path={iconOf(p)} />}
+      </Link>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, flexWrap: 'wrap' }}>
         {/* Vrai lien : les moteurs de recherche suivent les liens pour trouver les fiches. */}
-        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 500 }}><Link to={productPath(p.id)}>{p.name}</Link></h3>
-        <span style={{ display: 'flex', gap: 8, fontSize: 14, fontWeight: 600 }}>
-          <span style={p.old ? { color: 'var(--sale)' } : undefined}>{p.hasRange ? 'dès ' : ''}{fmt(p.price)}</span>
-          {p.old && <span style={{ color: 'var(--graphite)', fontWeight: 400, textDecoration: 'line-through' }}>{fmt(p.old)}</span>}
+        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.02em', lineHeight: 1.25 }}>
+          <Link to={productPath(p.id)}>{p.name}</Link>
+        </h3>
+        <span style={{ ...mono, fontSize: 14, display: 'flex', gap: 8, whiteSpace: 'nowrap' }}>
+          {p.old && <span style={{ color: 'var(--graphite)', textDecoration: 'line-through' }}>{fmt(p.old)}</span>}
+          <span>{p.hasRange ? 'dès ' : ''}{fmt(p.price)}</span>
         </span>
       </div>
+      {p.inStock && p.purchasable && (
+        <button
+          className="btn btn-dark"
+          // Avec plusieurs déclinaisons (taille, couleur…), le choix se fait sur la fiche.
+          onClick={() => { if (needsChoice) navigate(productPath(p.id)); else add(p.id, 1, p.variants[0]?.id); }}
+          style={{ height: 44, padding: '0 14px', marginTop: 'auto' }}
+        >
+          {needsChoice ? '+ Choisir la taille' : '+ Ajouter'}
+        </button>
+      )}
     </article>
   );
 }
 
+/** Grille du shop : cases séparées par des filets de 1 px, comme la maquette. */
 export function ProductGrid({ items }: { items: Product[] }) {
-  const L = useLayout();
   const { status, reload } = useCatalog();
-  const grid: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(150px, 21vw, 260px), 1fr))', gap: L.mobile ? '28px 12px' : '36px 20px' };
+  const grid: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(160px, 24vw, 340px), 1fr))', gap: 1, background: 'var(--line)', borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' };
   if (status === 'loading' && !items.length) {
     return (
       <div style={grid} aria-busy="true" aria-label="Chargement des articles">
-        {[0, 1, 2, 3].map((i) => <div key={i} className="ph" style={{ aspectRatio: '3/4', opacity: 0.6 }} />)}
+        {[0, 1, 2, 3].map((i) => <div key={i} style={{ background: 'var(--ivory)', padding: 16 }}><div className="ph" style={{ aspectRatio: '3/4', opacity: 0.6 }} /></div>)}
       </div>
     );
   }
@@ -126,10 +122,10 @@ export function CollectionsGrid() {
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <span className="display" style={{ fontSize: L.mobile ? 20 : 28, color: 'var(--ink)', letterSpacing: '.04em', textTransform: 'uppercase' }}>{c.label}</span>
+              <span className="display" style={{ fontSize: L.mobile ? 28 : 40, color: 'var(--ink)' }}>{c.label}</span>
               {L.desktop && <span style={{ fontSize: 13.5, color: 'var(--graphite)' }}>{c.sub}</span>}
             </div>
-            <span style={{ flex: 'none', width: 44, height: 44, borderRadius: '50%', border: '1px solid var(--line-strong)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ flex: 'none', width: 40, height: 40, border: '1px solid var(--line-strong)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <ArrowIcon size={14} />
             </span>
           </div>
@@ -146,7 +142,7 @@ export function Eyebrow({ children, style }: { children: React.ReactNode; style?
 
 export function Crumbs({ items }: { items: [string, string?][] }) {
   return (
-    <nav aria-label="Fil d’Ariane" style={{ display: 'flex', flexWrap: 'wrap', gap: 10, fontSize: 12, letterSpacing: '.08em', color: 'var(--graphite)' }}>
+    <nav aria-label="Fil d’Ariane" style={{ display: 'flex', flexWrap: 'wrap', gap: 10, fontFamily: 'var(--mono)', fontSize: 12, textTransform: 'uppercase', color: 'var(--graphite)' }}>
       {items.map(([label, to], i) => (
         <span key={label} style={{ display: 'flex', gap: 10 }}>
           {i > 0 && <span>/</span>}
